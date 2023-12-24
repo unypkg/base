@@ -159,6 +159,28 @@ version_details
 archiving_source
 
 ######################################################################################################################
+### Binutils
+pkgname="binutils"
+pkggit="https://sourceware.org/git/binutils-gdb.git refs/heads/binutils-[0-9-]*-branch"
+gitdepth="--depth=25"
+
+git ls-remote --refs --heads --sort="v:refname" | tail --lines=1
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
+latest_ver="$(echo "$latest_head" | grep -o "[0-9_]*" | tail -n 1 | sed "s|_|.|")"
+
+check_for_repo_and_create
+git_clone_source_repo
+
+latest_commit_id="$(git -C "$pkg_git_repo_dir" log --perl-regexp --author='^((?!GDB Administrator).*)$' -n 1 | grep "commit" | cut -d" " -f 2)"
+git -C "$pkg_git_repo_dir" checkout "$latest_commit_id"
+
+version_details
+archiving_source
+
+######################################################################################################################
 ### GCC
 pkgname="gcc"
 pkggit="https://gcc.gnu.org/git/gcc.git refs/heads/releases/gcc*"
