@@ -164,8 +164,6 @@ pkgname="binutils"
 pkggit="https://sourceware.org/git/binutils-gdb.git refs/heads/binutils-[0-9-]*-branch"
 gitdepth="--depth=25"
 
-git ls-remote --refs --heads --sort="v:refname" | tail --lines=1
-
 # Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
