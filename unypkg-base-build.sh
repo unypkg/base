@@ -107,10 +107,12 @@ function check_for_repo_and_create {
 
 function git_clone_source_repo {
     # shellcheck disable=SC2001
-    pkg_head="$(echo "$latest_head" | sed "s|.*refs/heads/||")"
+    pkg_head="$(echo "$latest_head" | sed "s|.*refs/[^/]*/||")"
     pkg_git_repo="$(echo "$pkggit" | cut --fields=1 --delimiter=" ")"
     pkg_git_repo_dir="$(basename "$pkg_git_repo" | cut -d. -f1)"
-    git clone "$gitdepth" --single-branch -b "$pkg_head" "$pkg_git_repo"
+    [[ -d "$pkg_git_repo_dir" ]] && rm -rf "$pkg_git_repo_dir"
+    # shellcheck disable=SC2086
+    git clone $gitdepth --single-branch -b "$pkg_head" "$pkg_git_repo"
 }
 
 function version_details {
@@ -133,6 +135,7 @@ function version_details {
 
 function archiving_source {
     rm -rf "$pkg_git_repo_dir"/.git
+    [[ -d "$pkgname-$latest_ver" ]] && rm -rf "$pkgname-$latest_ver"
     mv -v "$pkg_git_repo_dir" "$pkgname-$latest_ver"
     XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
 }
@@ -187,7 +190,8 @@ gitdepth="--depth=25"
 # Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
-latest_ver="$(git ls-remote --refs --sort="v:refname" https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc-* | grep -oE "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sed "s|gcc-||" | sort -n | tail -n 1)"
+# shellcheck disable=SC2086
+latest_ver="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -oE "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sed "s|gcc-||" | sort -n | tail -n 1)"
 
 check_for_repo_and_create
 git_clone_source_repo
@@ -200,8 +204,42 @@ archiving_source
 
 ######################################################################################################################
 ### Linux API Headers
-git clone --depth=1 --single-branch -b linux-rolling-stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-rm -rf linux/.git
+pkgname="linux-api-headers"
+pkggit="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git refs/heads/linux-rolling-stable"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+## To-Do: Make test with git diff --binary for glibc-2.37 release and with security backports from release/2.37/master
+check_for_repo_and_create
+git_clone_source_repo
+
+# shellcheck disable=SC2086
+latest_ver="$(git ls-remote --refs --tags --sort="v:refname" $pkg_git_repo | grep -Ev "\-rc[0-9]" | grep -oE "[0-9]*(([0-9]+\.)*[0-9]+)" | tail -n 1)"
+
+version_details
+archiving_source
+
+######################################################################################################################
+### M4
+pkgname="m4"
+pkggit="https://git.savannah.gnu.org/r/m4.git refs/tags/v1.4*"
+gitdepth=""
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+## To-Do: Make test with git diff --binary for glibc-2.37 release and with security backports from release/2.37/master
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
 
 ######################################################################################################################
 ######################################################################################################################
@@ -239,7 +277,7 @@ source ~/.bashrc
 cat >"$UNY"/build/stage_functions <<"EOF"
 function unpack_cd {
     cd "$UNY"/sources/ || exit
-    tar xf "$pkgname"*.tar.*
+    [[ ! -d $(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u) ]] && tar xf "$pkgname"*.tar.*
     cd "$(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u)" || exit
 }
 
