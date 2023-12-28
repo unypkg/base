@@ -235,7 +235,57 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-## To-Do: Make test with git diff --binary for glibc-2.37 release and with security backports from release/2.37/master
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
+### Ncurses
+pkgname="ncurses"
+pkggit="https://github.com/ThomasDickey/ncurses-snapshots.git refs/tags/*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -E "v[0-9]_[0-9]$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|v||" -e "s|_|.|")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
+### Bash
+pkgname="bash"
+pkggit="https://git.savannah.gnu.org/git/bash.git refs/*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --tags --refs --sort="v:refname" $pkggit | grep -E "bash-[0-9].[0-9]$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|bash-||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
+### Coreutils
+pkgname="coreutils"
+pkggit="https://git.savannah.gnu.org/git/coreutils.git refs/tags/v*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
 check_for_repo_and_create
 git_clone_source_repo
 version_details
