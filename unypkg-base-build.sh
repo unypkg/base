@@ -292,6 +292,40 @@ version_details
 archiving_source
 
 ######################################################################################################################
+### Diffutils
+pkgname="diffutils"
+pkggit="https://git.savannah.gnu.org/git/diffutils.git refs/tags/v*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
+### File
+pkgname="file"
+pkggit="https://github.com/file/file.git refs/tags/FILE*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|FILE||" -e "s|_|.|")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
 ######################################################################################################################
 # Run the next part as uny user
 sudo -i -u uny bash <<"EOFUNY"
