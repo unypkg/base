@@ -326,6 +326,40 @@ version_details
 archiving_source
 
 ######################################################################################################################
+### Findutils
+pkgname="findutils"
+pkggit="https://git.savannah.gnu.org/git/findutils.git refs/tags/v*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
+### Gawk
+pkgname="gawk"
+pkggit="https://git.savannah.gnu.org/git/gawk.git refs/tags/gawk-[0-9.]*"
+gitdepth="--depth=1"
+
+# Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "gawk-[0-9](.[0-9])+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|gawk-||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+git_clone_source_repo
+version_details
+archiving_source
+
+######################################################################################################################
 ######################################################################################################################
 # Run the next part as uny user
 sudo -i -u uny bash <<"EOFUNY"
