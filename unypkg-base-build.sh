@@ -156,7 +156,7 @@ pkgname="glibc"
 pkggit="https://sourceware.org/git/glibc.git refs/heads/release/*/master"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=4)"
@@ -171,7 +171,7 @@ pkgname="binutils"
 pkggit="https://sourceware.org/git/binutils-gdb.git refs/heads/binutils-[0-9-]*-branch"
 gitdepth="--depth=25"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
 latest_ver="$(echo "$latest_head" | grep -o "[0-9_]*" | tail -n 1 | sed "s|_|.|")"
@@ -191,7 +191,7 @@ pkgname="gcc"
 pkggit="https://gcc.gnu.org/git/gcc.git refs/heads/releases/gcc*"
 gitdepth="--depth=25"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
 # shellcheck disable=SC2086
@@ -212,7 +212,7 @@ pkgname="linux-api-headers"
 pkggit="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git refs/heads/linux-rolling-stable"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
@@ -233,7 +233,7 @@ pkgname="m4"
 pkggit="https://git.savannah.gnu.org/r/m4.git refs/tags/v1.4*"
 gitdepth=""
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
@@ -247,9 +247,9 @@ pkgname="ncurses"
 pkggit="https://github.com/ThomasDickey/ncurses-snapshots.git refs/tags/*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -E "v[0-9]_[0-9]$" | tail -n 1)"
+latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -E "v[0-9]_[0-9]+$" | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|v||" -e "s|_|.|")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
@@ -261,7 +261,7 @@ pkgname="bash"
 pkggit="https://git.savannah.gnu.org/git/bash.git refs/*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --tags --refs --sort="v:refname" $pkggit | grep -E "bash-[0-9].[0-9]$" | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|bash-||")"
@@ -275,7 +275,7 @@ pkgname="coreutils"
 pkggit="https://git.savannah.gnu.org/git/coreutils.git refs/tags/v*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
@@ -289,7 +289,7 @@ pkgname="diffutils"
 pkggit="https://git.savannah.gnu.org/git/diffutils.git refs/tags/v*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
@@ -303,7 +303,7 @@ pkgname="file"
 pkggit="https://github.com/file/file.git refs/tags/FILE*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|FILE||" -e "s|_|.|")"
@@ -317,7 +317,7 @@ pkgname="findutils"
 pkggit="https://git.savannah.gnu.org/git/findutils.git refs/tags/v*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
 latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
@@ -331,10 +331,108 @@ pkgname="gawk"
 pkggit="https://git.savannah.gnu.org/git/gawk.git refs/tags/gawk-[0-9.]*"
 gitdepth="--depth=1"
 
-# Get version info from git remote
+### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "gawk-[0-9](.[0-9])+$" | tail -n 1)"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "gawk-[0-9](.[0-9]+)+$" | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|gawk-||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Grep
+pkgname="grep"
+pkggit="https://git.savannah.gnu.org/git/grep.git refs/tags/v*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9].[0-9]+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Gzip
+pkgname="gzip"
+pkggit="https://git.savannah.gnu.org/git/gzip.git refs/tags/v*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9].[0-9]+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Make
+pkgname="make"
+pkggit="https://git.savannah.gnu.org/git/make.git refs/tags/[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Patch
+pkgname="patch"
+pkggit="https://git.savannah.gnu.org/git/patch.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Sed
+pkgname="sed"
+pkggit="https://git.savannah.gnu.org/git/sed.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Tar
+pkgname="tar"
+pkggit="https://git.savannah.gnu.org/git/tar.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Xz
+pkgname="xz"
+pkggit="https://github.com/tukaani-project/xz.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 repo_clone_version_archive
