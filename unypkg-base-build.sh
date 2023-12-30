@@ -140,6 +140,13 @@ function archiving_source {
     XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
 }
 
+function repo_clone_version_archive {
+    check_for_repo_and_create
+    git_clone_source_repo
+    version_details
+    archiving_source
+}
+
 ######################################################################################################################
 ######################################################################################################################
 
@@ -156,10 +163,7 @@ latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=4)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 ## To-Do: Make test with git diff --binary for glibc-2.37 release and with security backports from release/2.37/master
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Binutils
@@ -235,10 +239,7 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Ncurses
@@ -252,10 +253,7 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -E "v[0-9]
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|v||" -e "s|_|.|")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Bash
@@ -269,10 +267,7 @@ latest_head="$(git ls-remote --tags --refs --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|bash-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Coreutils
@@ -286,10 +281,7 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Diffutils
@@ -303,10 +295,7 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### File
@@ -320,10 +309,7 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|FILE||" -e "s|_|.|")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Findutils
@@ -337,10 +323,7 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Gawk
@@ -354,10 +337,7 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|gawk-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ######################################################################################################################
