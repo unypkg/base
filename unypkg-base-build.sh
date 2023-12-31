@@ -580,14 +580,44 @@ repo_clone_version_archive
 ######################################################################################################################
 ### Bc
 pkgname="bc"
+pkggit="https://github.com/gavinhoward/bc.git refs/tags/[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Flex
 pkgname="flex"
+pkggit="https://github.com/westes/flex.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Tcl
 pkgname="tcl"
+pkggit="https://github.com/tcltk/tcl.git refs/tags/core-[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "core-[0-9](-[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|core-||" -e "s|-|.|g")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Expect
