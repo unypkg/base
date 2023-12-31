@@ -524,18 +524,58 @@ repo_clone_version_archive
 ######################################################################################################################
 ### zLib
 pkgname="zlib"
+pkggit="https://github.com/madler/zlib.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Bzip2
 pkgname="bzip2"
+pkggit="https://gitlab.com/bzip2/bzip2.git refs/tags/bzip2-[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "bzip2-[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|bzip2-||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Zstd
 pkgname="zstd"
+pkggit="https://github.com/facebook/zstd.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Readline
 pkgname="readline"
+pkggit="https://git.savannah.gnu.org/git/readline.git refs/tags/readline-[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "readline-[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|readline-||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### Bc
