@@ -622,18 +622,62 @@ repo_clone_version_archive
 ######################################################################################################################
 ### Expect
 pkgname="expect"
+expectver="5.45.4"
+curl -LO https://prdownloads.sourceforge.net/expect/expect"$expectver".tar.gz
+tar xf expect"$expectver".tar.gz
+rm expect"$expectver".tar.gz
+chown -R root:root expect"$expectver"
+mv expect"$expectver" expect-"$expectver"
+XZ_OPT="--threads=0" tar -cJpf expect-"$expectver".tar.xz expect-"$expectver"
+
+latest_ver="$expectver"
+latest_commit_id="$expectver"
+
+check_for_repo_and_create
+version_details
 
 ######################################################################################################################
 ### DejaGNU
 pkgname="dejagnu"
+pkggit="https://git.savannah.gnu.org/git/dejagnu.git refs/tags/dejagnu-[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "dejagnu-[0-9](.[0-9]+)+-release$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|dejagnu-||" -e "s|-release||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### GMP
 pkgname="gmp"
 
+latest_pkg="$(curl https://ftp.gnu.org/gnu/gmp/ | tac | tac | grep -oE "gmp-.*.tar.xz\"" | sed "s|\"||" | tail -n 1)"
+latest_ver="$(echo "$latest_pkg" | cut --delimiter='-' --fields=2 | sed "s|.tar.xz||")"
+latest_commit_id="$latest_ver"
+
+curl -LO https://ftp.gnu.org/gnu/gmp/"$latest_pkg"
+tar xf "$latest_pkg"
+chown -R root:root gmp-*
+
+check_for_repo_and_create
+version_details
+
 ######################################################################################################################
 ### MPFR
 pkgname="mpfr"
+pkggit="https://gitlab.inria.fr/mpfr/mpfr.git refs/tags/[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9](.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
 
 ######################################################################################################################
 ### MPC
