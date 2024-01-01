@@ -764,6 +764,46 @@ latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 repo_clone_version_archive
 
 ######################################################################################################################
+### Libtool
+pkgname="libtool"
+pkggit="https://git.savannah.gnu.org/git/libtool.git refs/tags/v[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9](\.[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Expat
+pkgname="expat"
+pkggit="https://github.com/libexpat/libexpat.git refs/tags/R_[0-9.]*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "R_[0-9](_[0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|R_||" -e "s|_|.|g")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+repo_clone_version_archive
+
+######################################################################################################################
+### Less
+pkgname="less"
+
+######################################################################################################################
+### Autoconf
+pkgname="autoconf"
+
+######################################################################################################################
+### Automake
+pkgname="automake"
+
+######################################################################################################################
 ######################################################################################################################
 # Run the next part as uny user
 sudo -i -u uny bash <<"EOFUNY"
@@ -1977,7 +2017,7 @@ verbose_off_timing_end
 
 ######################################################################################################################
 ### Linux API Headers
-pkgname="linux"
+pkgname="linux-api-headers"
 
 version_verbose_log_clean_unpack_cd
 get_env_var_values
@@ -1985,8 +2025,6 @@ get_include_paths
 
 ####################################################
 ### Start of individual build script
-
-pkgname="linux-api-headers"
 
 unset LD_RUN_PATH
 
@@ -3564,8 +3602,11 @@ done
 
 mkdir -pv /home/uny/build
 mv -v /uny/sources /home/uny/sources
-mv -v /uny/uny/build/logs /home/uny/build/logs
 rm -rfv /uny/uny/include
 
 cd $UNY || exit
-XZ_OPT="-0 --threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base.tar.xz .
+
+XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
+mv -v /uny/uny/build/logs /home/uny/build/logs
+
+XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-"$uny_build_date_now".tar.xz .
