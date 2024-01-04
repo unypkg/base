@@ -123,6 +123,7 @@ function version_details {
 
     # pkg will be built, if commit id is different and newer.
     # Before a pkg is built the existence of a vdet-"$pkgname"-new file is checked
+    "$UNY"/sources/vdet-*-new
     if [[ "$latest_commit_id" != "$old_commit_id" && "$uny_build_date_seconds_now" -gt "$uny_build_date_seconds_old" ]]; then
         {
             echo "$latest_ver"
@@ -3636,7 +3637,20 @@ rm -rfv /uny/uny/include
 
 cd $UNY || exit
 
-XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
+XZ_OPT="--threads=0" tar -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
 mv -v /uny/uny/build/logs /home/uny/build/logs
 
 XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-"$uny_build_date_now".tar.xz .
+
+cd $UNY/pkg || exit
+for pkg in "$UNY"/sources/vdet-*-new; do
+    vdet_content="$(cat "$pkg")"
+    pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
+    pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
+    if [[ $(gh -R unypkg/"$pkg" release view "$release") ]]; then
+        gh -R unypkg/"$pkg" release upload testrelease1 --clobber test1 "test2#Label of test2 $variable"
+    else
+        gh -R unypkg/"$pkg" release create testrelease1 --generate-notes test1 "test2#Label of test2"
+    fi
+    XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
+done
