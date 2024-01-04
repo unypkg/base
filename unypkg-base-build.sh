@@ -15,6 +15,13 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
     patch libstdc++6 rsync gh git meson ninja-build
 
+### Getting Variables from files
+UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+export UNY_AUTO_PAT
+# shellcheck disable=SC2034
+GH_TOKEN="$(cat GH_TOKEN)"
+export GH_TOKEN
+
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
 
@@ -36,6 +43,7 @@ source /root/.bash_profile
 git config --global user.name "uny-auto"
 git config --global user.email "uny-auto@unyqly.com"
 git config --global credential.helper store
+git config --global advice.detachedHead false
 
 git credential approve <<EOF
 protocol=https
@@ -45,9 +53,8 @@ password="$UNY_AUTO_PAT"
 EOF
 
 # gh auth with uny-auto classic personal access token
-echo "$UNY_AUTO_PAT" >gh_token
-gh auth login --with-token <gh_token
-rm gh_token
+# This only works interactively
+# gh auth login --with-token #<<<"$UNY_AUTO_PAT"
 
 ### Add uny user
 groupadd uny
@@ -71,7 +78,7 @@ esac
 
 mkdir -pv "$UNY"/tools
 
-chown -v uny "$UNY"/{usr{,/*},lib,var,etc,bin,sbin,tools}
+chown -R uny:uny "$UNY"/* #{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
 x86_64) chown -v uny "$UNY"/lib64 ;;
 esac
@@ -205,6 +212,16 @@ git -C "$pkg_git_repo_dir" checkout "$latest_commit_id"
 
 version_details
 archiving_source
+
+######################################################################################################################
+######################################################################################################################
+### Exit if Glibc, Binutils or GCC are not newer
+if [[ -f vdet-glibc-new || -f vdet-binutils-new || -f vdet-gcc-new ]]; then
+    echo "Continuing"
+else
+    echo "No new version of Glibc, Binutils or GCC found, exiting..."
+    exit
+fi
 
 ######################################################################################################################
 ### Linux API Headers
@@ -835,7 +852,11 @@ repo_clone_version_archive
 
 ######################################################################################################################
 ######################################################################################################################
-# Run the next part as uny user
+### Run the next part as uny user
+
+# Change ownership to uny
+chown -Rv uny:uny /uny/sources/*
+
 sudo -i -u uny bash <<"EOFUNY"
 set -vx
 
@@ -843,7 +864,7 @@ cat >~/.bash_profile <<"EOF"
 exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 EOF
 
-cat >~/.bashrc <<"EOF"
+cat >~/.profile <<"EOF"
 set +h
 umask 022
 UNY=/uny
@@ -856,11 +877,21 @@ CONFIG_SITE=$UNY/usr/share/config.site
 export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
 MAKEFLAGS="-j$(nproc)"
 EOF
+EOFUNY
 
-# shellcheck source=/dev/null
-source ~/.bash_profile
-# shellcheck source=/dev/null
-source ~/.bashrc
+sudo -i -u uny bash <<"EOFUNY"
+set -vx
+set +h
+umask 022
+UNY=/uny
+LC_ALL=POSIX
+UNY_TGT=$(uname -m)-uny-linux-gnu
+PATH=/usr/bin
+if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
+PATH=$UNY/tools/bin:$PATH
+CONFIG_SITE=$UNY/usr/share/config.site
+export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
+MAKEFLAGS="-j$(nproc)"
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1479,11 +1510,10 @@ umount $UNY/{sys,proc,run,dev}
 EOFUNYC
 chmod +x /bin/unyc
 
-chown -R root:root $UNY/{usr,lib,var,etc,bin,sbin,tools}
+chown -R root:root $UNY/*
 case $(uname -m) in
 x86_64) chown -R root:root $UNY/lib64 ;;
 esac
-chown root:root $UNY/sources/*
 
 ######################################################################################################################
 ######################################################################################################################
@@ -3630,13 +3660,35 @@ done
 ######################################################################################################################
 ### Cleaning and compressing final build system
 
-mkdir -pv /home/uny/build
-mv -v /uny/sources /home/uny/sources
+mkdir -pv /var/uny/build
+mv -v /uny/sources /var/uny/sources
 rm -rfv /uny/uny/include
 
 cd $UNY || exit
+XZ_OPT="--threads=0" tar -cJpf /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
+mv -v /uny/uny/build/logs /var/uny/build/logs
 
-XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
-mv -v /uny/uny/build/logs /home/uny/build/logs
+XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /var/unypkg-base-"$uny_build_date_now".tar.xz .
 
-XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-"$uny_build_date_now".tar.xz .
+gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
+    /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz /var/unypkg-base-"$uny_build_date_now".tar.xz
+
+######################################################################################################################
+######################################################################################################################
+### Packaging individual ones
+
+cd $UNY/pkg || exit
+for pkg in /var/uny/sources/vdet-*-new; do
+    vdet_content="$(cat "$pkg")"
+    vdet_new_file="$pkg"
+    pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
+    pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
+
+    cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
+    cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
+    cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
+    XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
+    # To-do: Also upload source with next command
+    gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$pkg"-"$pkgv"-source.tar.xz
+done
