@@ -123,7 +123,6 @@ function version_details {
 
     # pkg will be built, if commit id is different and newer.
     # Before a pkg is built the existence of a vdet-"$pkgname"-new file is checked
-    "$UNY"/sources/vdet-*-new
     if [[ "$latest_commit_id" != "$old_commit_id" && "$uny_build_date_seconds_now" -gt "$uny_build_date_seconds_old" ]]; then
         {
             echo "$latest_ver"
@@ -206,6 +205,15 @@ git -C "$pkg_git_repo_dir" checkout "$latest_commit_id"
 
 version_details
 archiving_source
+
+######################################################################################################################
+######################################################################################################################
+### Exit if Glibc, Binutils or GCC are not newer
+if [[ -f vdet-glibc-new || -f vdet-binutils-new || -f vdet-gcc-new ]]; then
+    echo "Continuing"
+else
+    exit
+fi
 
 ######################################################################################################################
 ### Linux API Headers
@@ -3636,21 +3644,27 @@ mv -v /uny/sources /home/uny/sources
 rm -rfv /uny/uny/include
 
 cd $UNY || exit
-
 XZ_OPT="--threads=0" tar -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
 mv -v /uny/uny/build/logs /home/uny/build/logs
 
 XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-"$uny_build_date_now".tar.xz .
 
+gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
+    /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz /home/unypkg-base-"$uny_build_date_now".tar.xz
+
+######################################################################################################################
+######################################################################################################################
+### Packaging individual ones
+
 cd $UNY/pkg || exit
-for pkg in "$UNY"/sources/vdet-*-new; do
+for pkg in /home/uny/sources/vdet-*-new; do
     vdet_content="$(cat "$pkg")"
-    pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
+    vdet_new_file="$pkg"
     pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
-    if [[ $(gh -R unypkg/"$pkg" release view "$release") ]]; then
-        gh -R unypkg/"$pkg" release upload testrelease1 --clobber test1 "test2#Label of test2 $variable"
-    else
-        gh -R unypkg/"$pkg" release create testrelease1 --generate-notes test1 "test2#Label of test2"
-    fi
+    pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
+
+    cp "$vdet_new_file" "$pkg"/*/vdet
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
+    # To-do: Also upload source with next command
+    gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes "$pkg/*/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz
 done
