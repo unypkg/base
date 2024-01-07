@@ -16,5 +16,5 @@ jobs:
       - name: Save variables to files
         run: |
           pwd
-          echo "TEST_VAR" >TEST_VAR
+          echo "$TEST_VAR" >TEST_VAR
       - run: sudo ./unypkg-base-build.sh
