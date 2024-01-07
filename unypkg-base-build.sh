@@ -52,9 +52,8 @@ password="$UNY_AUTO_PAT"
 EOF
 
 # gh auth with uny-auto classic personal access token
-#gh auth login --with-token #<<<"$UNY_AUTO_PAT"
-echo "bla" >testfile
-gh -R unypkg/demo release create testingifthisworks2 --generate-notes testfile
+# This only works interactively
+# gh auth login --with-token #<<<"$UNY_AUTO_PAT"
 
 ### Add uny user
 groupadd uny
