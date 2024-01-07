@@ -7,4 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unypkg-base-build.sh
+      - run: ls -lh
+      - run: base/unypkg-base-build.sh
