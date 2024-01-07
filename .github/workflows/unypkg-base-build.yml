@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      #- run: chmod +x unypkg-base-build.sh
       - run: sudo -i
+      - run: chmod +x unypkg-base-build.sh
       - run: ./unypkg-base-build.sh
         env:
           UNY_AUTO_PAT: ${{ secrets.UNY_AUTO_PAT }}
