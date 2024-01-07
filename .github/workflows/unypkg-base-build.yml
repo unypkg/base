@@ -17,5 +17,5 @@ jobs:
           echo "$GH_TOKEN" >GH_TOKEN
       - name: Run the build script
         run: |
-        chmod +x unypkg-base-build.sh
-        sudo ./unypkg-base-build.sh
+          chmod +x unypkg-base-build.sh
+          sudo ./unypkg-base-build.sh
