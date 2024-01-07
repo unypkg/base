@@ -46,6 +46,7 @@ EOF
 
 # gh auth with uny-auto classic personal access token
 #gh auth login --with-token #<<<"$UNY_AUTO_PAT"
+echo "Next comes the TestVar"
 echo "$TEST_VAR"
 echo "bla" >testfile
 gh -R unypkg/demo release create testingifthisworks2 --generate-notes testfile
