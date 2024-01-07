@@ -1,0 +1,10 @@
+name: Build unypkg Base System
+
+on: workflow_dispatch
+
+jobs:
+  build-unypkg-system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: unypkg-base-build.sh
