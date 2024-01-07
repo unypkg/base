@@ -17,8 +17,10 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
 
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+export UNY_AUTO_PAT
 # shellcheck disable=SC2034
 GH_TOKEN="$(cat GH_TOKEN)"
+export GH_TOKEN
 
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
