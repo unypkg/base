@@ -43,6 +43,7 @@ source /root/.bash_profile
 git config --global user.name "uny-auto"
 git config --global user.email "uny-auto@unyqly.com"
 git config --global credential.helper store
+git config --global advice.detachedHead false
 
 git credential approve <<EOF
 protocol=https
