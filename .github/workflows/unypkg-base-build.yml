@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: chmod +x unypkg-base-build.sh
-      - run: sudo ./unypkg-base-build.sh
+      - run: TEST_VAR="$TEST_VAR" sudo ./unypkg-base-build.sh
