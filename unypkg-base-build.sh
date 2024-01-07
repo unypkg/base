@@ -212,6 +212,7 @@ archiving_source
 if [[ -f vdet-glibc-new || -f vdet-binutils-new || -f vdet-gcc-new ]]; then
     echo "Continuing"
 else
+    echo "No new version of Glibc, Binutils or GCC found, exiting..."
     exit
 fi
 
@@ -3639,32 +3640,35 @@ done
 ######################################################################################################################
 ### Cleaning and compressing final build system
 
-mkdir -pv /home/uny/build
-mv -v /uny/sources /home/uny/sources
+mkdir -pv /var/uny/build
+mv -v /uny/sources /var/uny/sources
 rm -rfv /uny/uny/include
 
 cd $UNY || exit
-XZ_OPT="--threads=0" tar -cJpf /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
-mv -v /uny/uny/build/logs /home/uny/build/logs
+XZ_OPT="--threads=0" tar -cJpf /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
+mv -v /uny/uny/build/logs /var/uny/build/logs
 
-XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /home/unypkg-base-"$uny_build_date_now".tar.xz .
+XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /var/unypkg-base-"$uny_build_date_now".tar.xz .
 
 gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
-    /home/unypkg-base-build-logs-"$uny_build_date_now".tar.xz /home/unypkg-base-"$uny_build_date_now".tar.xz
+    /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz /var/unypkg-base-"$uny_build_date_now".tar.xz
 
 ######################################################################################################################
 ######################################################################################################################
 ### Packaging individual ones
 
 cd $UNY/pkg || exit
-for pkg in /home/uny/sources/vdet-*-new; do
+for pkg in /var/uny/sources/vdet-*-new; do
     vdet_content="$(cat "$pkg")"
     vdet_new_file="$pkg"
     pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
     pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
 
-    cp "$vdet_new_file" "$pkg"/*/vdet
+    cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
+    cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
+    cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
     # To-do: Also upload source with next command
-    gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes "$pkg/*/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz
+    gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$pkg"-"$pkgv"-source.tar.xz
 done
