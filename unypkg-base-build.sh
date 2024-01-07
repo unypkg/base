@@ -16,9 +16,9 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     patch libstdc++6 rsync gh git meson ninja-build
 
 ### Getting Variables from files
-TEST_VAR="$(cat TEST_VAR)"
-echo "We are here"
-pwd
+UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+# shellcheck disable=SC2034
+GH_TOKEN="$(cat GH_TOKEN)"
 
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
@@ -51,8 +51,6 @@ EOF
 
 # gh auth with uny-auto classic personal access token
 #gh auth login --with-token #<<<"$UNY_AUTO_PAT"
-echo "Next comes the TestVar"
-echo "$TEST_VAR"
 echo "bla" >testfile
 gh -R unypkg/demo release create testingifthisworks2 --generate-notes testfile
 
