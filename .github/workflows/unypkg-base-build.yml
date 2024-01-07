@@ -2,6 +2,10 @@ name: Build unypkg Base System
 
 on: workflow_dispatch
 
+env:
+  UNY_AUTO_PAT: ${{ secrets.UNY_AUTO_PAT }}
+  GH_TOKEN: ${{ secrets.UNY_AUTO_PAT }}
+
 jobs:
   build-unypkg-system:
     runs-on: ubuntu-latest
@@ -9,6 +13,3 @@ jobs:
       - uses: actions/checkout@v4
       - run: chmod +x unypkg-base-build.sh
       - run: sudo ./unypkg-base-build.sh
-        env:
-          UNY_AUTO_PAT: ${{ secrets.UNY_AUTO_PAT }}
-          GH_TOKEN: ${{ secrets.UNY_AUTO_PAT }}
