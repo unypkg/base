@@ -874,9 +874,12 @@ MAKEFLAGS="-j$(nproc)"
 EOF
 
 # shellcheck source=/dev/null
-source ~/.bash_profile
+#source ~/.bash_profile
 # shellcheck source=/dev/null
-source ~/.bashrc
+#source ~/.bashrc
+EOFUNY
+
+sudo -i -u uny bash <<"EOFUNY"
 
 ######################################################################################################################
 ######################################################################################################################
