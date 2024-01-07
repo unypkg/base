@@ -13,5 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: chmod +x unypkg-base-build.sh
-      - run: sudo bash -c "export TEST_VAR=$TEST_VAR"
+      - name: Save variables to files
+      - run: |
+          pwd
+          echo "TEST_VAR" >TEST_VAR
       - run: sudo ./unypkg-base-build.sh

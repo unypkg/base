@@ -15,6 +15,11 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
     patch libstdc++6 rsync gh git meson ninja-build
 
+### Getting Variables from files
+TEST_VAR="$(cat TEST_VAR)"
+echo "We are here"
+pwd
+
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
 
