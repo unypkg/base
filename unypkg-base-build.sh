@@ -78,7 +78,7 @@ esac
 
 mkdir -pv "$UNY"/tools
 
-chown -v uny "$UNY"/{usr{,/*},lib,var,etc,bin,sbin,tools}
+chown -Rv uny:uny "$UNY"/* #{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
 x86_64) chown -v uny "$UNY"/lib64 ;;
 esac
