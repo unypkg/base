@@ -852,7 +852,11 @@ repo_clone_version_archive
 
 ######################################################################################################################
 ######################################################################################################################
-# Run the next part as uny user
+### Run the next part as uny user
+
+# Change ownership to uny
+chown -Rv uny:uny /uny/sources/*
+
 sudo -i -u uny bash <<"EOFUNY"
 set -vx
 
@@ -1506,11 +1510,10 @@ umount $UNY/{sys,proc,run,dev}
 EOFUNYC
 chmod +x /bin/unyc
 
-chown -R root:root $UNY/{usr,lib,var,etc,bin,sbin,tools}
+chown -Rv root:root $UNY/*
 case $(uname -m) in
 x86_64) chown -R root:root $UNY/lib64 ;;
 esac
-chown root:root $UNY/sources/*
 
 ######################################################################################################################
 ######################################################################################################################
