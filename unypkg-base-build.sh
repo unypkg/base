@@ -78,7 +78,7 @@ esac
 
 mkdir -pv "$UNY"/tools
 
-chown -Rv uny:uny "$UNY"/* #{usr{,/*},lib,var,etc,bin,sbin,tools}
+chown -R uny:uny "$UNY"/* #{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
 x86_64) chown -v uny "$UNY"/lib64 ;;
 esac
@@ -1510,7 +1510,7 @@ umount $UNY/{sys,proc,run,dev}
 EOFUNYC
 chmod +x /bin/unyc
 
-chown -Rv root:root $UNY/*
+chown -R root:root $UNY/*
 case $(uname -m) in
 x86_64) chown -R root:root $UNY/lib64 ;;
 esac
