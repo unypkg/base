@@ -15,6 +15,9 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
     patch libstdc++6 rsync gh git meson ninja-build
 
+echo "env is here: $(type env)"
+echo "chroot is here: $(type chroot)"
+
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
 export UNY_AUTO_PAT
