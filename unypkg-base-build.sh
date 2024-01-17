@@ -178,7 +178,7 @@ repo_clone_version_archive
 ######################################################################################################################
 ### Binutils
 pkgname="binutils"
-pkggit="https://sourceware.org/git/binutils-gdb.git refs/heads/binutils-[0-9-]*-branch"
+pkggit="https://sourceware.org/git/binutils-gdb.git refs/heads/binutils-$(git ls-remote --refs --sort="v:refname" https://sourceware.org/git/binutils-gdb.git refs/tags/binutils-[0-9_]* | tail -n 1 | grep -Eo "[0-9_]*" | tail -n 1 | grep -Eo "[0-9]_[0-9]*")-branch"
 gitdepth="--depth=25"
 
 ### Get version info from git remote
@@ -191,6 +191,7 @@ git_clone_source_repo
 
 latest_commit_id="$(git -C "$pkg_git_repo_dir" log --perl-regexp --author='^((?!GDB Administrator).*)$' -n 1 | grep "commit" | cut -d" " -f 2)"
 git -C "$pkg_git_repo_dir" checkout "$latest_commit_id"
+rm -r "$pkg_git_repo_dir"/{contrib,djunpack.bat,gdb,gdb*,libbacktrace,libdecnumber,multilib.am,readline,sim}
 
 version_details
 archiving_source
@@ -942,7 +943,7 @@ make -j"$(nproc)"
 make install
 
 cleanup
-
+EOFUNY
 ######################################################################################################################
 ### GCC Pass 1
 
