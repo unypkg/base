@@ -250,30 +250,8 @@ archiving_source
 
 ######################################################################################################################
 ### M4
-pkgname="m4"
-pkggit="https://git.savannah.gnu.org/r/m4.git refs/tags/v1.4*"
-gitdepth=""
 
-### Get version info from git remote
-# shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)"
-latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
-latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
-
-git clone --depth 1 https://git.savannah.gnu.org/git/gnulib.git
-GNULIB_SRCDIR=$(pwd)/gnulib
-
-check_for_repo_and_create
-git_clone_source_repo
-
-cd "$pkg_git_repo_dir" || exit
-rm -f .gitmodules
-./bootstrap -c --skip-git --gnulib-srcdir="$GNULIB_SRCDIR"
-rm -rf gnulib autom4te.cache HACKING bootstrap.conf gl
-cd /uny/sources || exit
-
-version_details
-archiving_source
+wget https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz
 
 ######################################################################################################################
 ### Ncurses
