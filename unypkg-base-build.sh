@@ -13,7 +13,7 @@ fi
 
 apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev \
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
-    patch libstdc++6 rsync gh git meson ninja-build
+    patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev
 
 echo "env is here: $(type env)"
 echo "chroot is here: $(type chroot)"
@@ -260,7 +260,20 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+git clone --depth 1 https://git.savannah.gnu.org/git/gnulib.git
+GNULIB_SRCDIR=$(pwd)/gnulib
+
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+rm -f .gitmodules
+./bootstrap -c --skip-git --gnulib-srcdir="$GNULIB_SRCDIR"
+rm -rf gnulib autom4te.cache HACKING bootstrap.conf gl
+cd /uny/sources || exit
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### Ncurses
@@ -703,7 +716,7 @@ git_clone_source_repo
 
 cd "$pkg_git_repo_dir" || exit
 autoreconf -i
-cd ..
+cd /uny/sources || exit
 
 version_details
 archiving_source
@@ -725,7 +738,7 @@ git_clone_source_repo
 
 cd "$pkg_git_repo_dir" || exit
 autoreconf -i
-cd ..
+cd /uny/sources || exit
 
 version_details
 archiving_source
@@ -1003,7 +1016,7 @@ make install
 
 cd ..
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
-    "$(dirname "$("$UNY_TGT"-gcc -print-libgcc-file-name)")"/install-tools/include/limits.h
+    "$(dirname "$("$UNY_TGT"-gcc -print-libgcc-file-name)")"/include/limits.h
 
 cleanup
 
@@ -1056,7 +1069,7 @@ make DESTDIR="$UNY" install
 
 sed '/RTLDLIST=/s@/usr@@g' -i "$UNY"/usr/bin/ldd
 
-mkheaders_command=("$UNY"/tools/libexec/gcc/"$UNY_TGT"/*/install-tools/mkheaders)
+#mkheaders_command=("$UNY"/tools/libexec/gcc/"$UNY_TGT"/*/install-tools/mkheaders)
 "${mkheaders_command[@]}"
 
 cleanup
