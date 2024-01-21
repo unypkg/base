@@ -104,7 +104,7 @@ uny_build_date_now="$(date -d @"$uny_build_date_seconds_now" +"%Y-%m-%dT%H.%M.%S
 
 function check_for_repo_and_create {
     # Create repo if it doesn't exist
-    if [[ $(curl -s -o /dev/null -w "%{http_code}" https://github.com/unypkg/$pkgname) != "200" ]]; then
+    if [[ $(curl -s -o /dev/null -w "%{http_code}" https://github.com/unypkg/"$pkgname") != "200" ]]; then
         gh repo create unypkg/"$pkgname" --public
         [[ ! -d unygit ]] && mkdir -v unygit
         git -C unygit clone https://github.com/unypkg/"$pkgname".git
@@ -144,7 +144,7 @@ function version_details {
 }
 
 function archiving_source {
-    rm -rf "$pkg_git_repo_dir"/.git
+    rm -rf "$pkg_git_repo_dir"/.git "$pkg_git_repo_dir"/.git*
     [[ -d "$pkgname-$latest_ver" ]] && rm -rf "$pkgname-$latest_ver"
     mv -v "$pkg_git_repo_dir" "$pkgname-$latest_ver"
     XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
@@ -698,7 +698,15 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+autoreconf -i
+cd ..
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### MPC
@@ -712,7 +720,15 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+autoreconf -i
+cd ..
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### Attr
@@ -859,7 +875,7 @@ repo_clone_version_archive
 ### Run the next part as uny user
 
 # Change ownership to uny
-chown -Rv uny:uny /uny/sources/*
+chown -R uny:uny /uny/sources/*
 
 sudo -i -u uny bash <<"EOFUNY"
 set -vx
@@ -868,7 +884,7 @@ cat >~/.bash_profile <<"EOF"
 exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 EOF
 
-cat >~/.profile <<"EOF"
+cat >~/.bashrc <<"EOF"
 set +h
 umask 022
 UNY=/uny
@@ -880,22 +896,12 @@ PATH=$UNY/tools/bin:$PATH
 CONFIG_SITE=$UNY/usr/share/config.site
 export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
 MAKEFLAGS="-j$(nproc)"
+source "$UNY"/build/stage_functions
 EOF
 EOFUNY
 
 sudo -i -u uny bash <<"EOFUNY"
-set -vx
-set +h
-umask 022
-UNY=/uny
-LC_ALL=POSIX
-UNY_TGT=$(uname -m)-uny-linux-gnu
-PATH=/usr/bin
-if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
-PATH=$UNY/tools/bin:$PATH
-CONFIG_SITE=$UNY/usr/share/config.site
-export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
-MAKEFLAGS="-j$(nproc)"
+source ~/.bashrc
 
 ######################################################################################################################
 ######################################################################################################################
@@ -943,7 +949,7 @@ make -j"$(nproc)"
 make install
 
 cleanup
-EOFUNY
+
 ######################################################################################################################
 ### GCC Pass 1
 
@@ -956,7 +962,7 @@ tar -xf ../mpfr-*.tar.xz
 mv -v mpfr-* mpfr
 tar -xf ../gmp-*.tar.xz
 mv -v gmp-* gmp
-tar -xf ../mpc-*.tar.gz
+tar -xf ../mpc-*.tar.xz
 mv -v mpc-* mpc
 
 case $(uname -m) in
