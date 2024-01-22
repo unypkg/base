@@ -315,7 +315,6 @@ version_details
 ### Diffutils
 pkgname="diffutils"
 pkggit="https://git.savannah.gnu.org/git/diffutils.git refs/tags/v*"
-gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
@@ -323,7 +322,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/diffutils/diffutils-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### File
