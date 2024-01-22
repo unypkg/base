@@ -130,6 +130,7 @@ function version_details {
     curl -LO https://github.com/unypkg/"$pkgname"/releases/latest/download/vdet
     old_commit_id="$(sed '2q;d' vdet)"
     uny_build_date_seconds_old="$(sed '4q;d' vdet)"
+    [[ $latest_commit_id == "" ]] && latest_commit_id="$latest_ver"
 
     # pkg will be built, if commit id is different and newer.
     # Before a pkg is built the existence of a vdet-"$pkgname"-new file is checked
@@ -250,8 +251,20 @@ archiving_source
 
 ######################################################################################################################
 ### M4
+pkgname="m4"
+pkggit="https://git.savannah.gnu.org/r/m4.git refs/tags/v1.4*"
 
-wget https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail --lines=1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/m4/m4-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Ncurses
@@ -285,7 +298,6 @@ repo_clone_version_archive
 ### Coreutils
 pkgname="coreutils"
 pkggit="https://git.savannah.gnu.org/git/coreutils.git refs/tags/v*"
-gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
@@ -293,7 +305,11 @@ latest_head="$(git ls-remote --refs --sort="v:refname" $pkggit | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/coreutils/coreutils-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Diffutils
