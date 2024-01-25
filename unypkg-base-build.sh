@@ -340,7 +340,15 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|FILE||" -e "s|_|.|")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+autoreconf -i
+cd /uny/sources || exit
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### Findutils
@@ -354,7 +362,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail -n 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/findutils/findutils-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Gawk
