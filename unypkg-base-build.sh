@@ -394,7 +394,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/grep/grep-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Gzip
@@ -408,7 +412,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/gzip/gzip-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Make
@@ -422,7 +430,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/make/make-"$latest_ver".tar.gz
+
+version_details
 
 ######################################################################################################################
 ### Patch
@@ -436,7 +448,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/patch/patch-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Sed
@@ -450,7 +466,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/sed/sed-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Tar
@@ -464,7 +484,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/tar/tar-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Xz
@@ -492,7 +516,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/gettext/gettext-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Bison
@@ -506,7 +534,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/bison/bison-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Perl
@@ -548,7 +580,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|texinfo-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/texinfo/texinfo-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Util-Linux
@@ -764,7 +800,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://download.savannah.nongnu.org/releases/attr/attr-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Acl
@@ -778,7 +818,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://download.savannah.gnu.org/releases/acl/acl-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Libcap
@@ -834,7 +878,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/libtool/libtool-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Expat
@@ -876,7 +924,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/autoconf/autoconf-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Automake
@@ -890,7 +942,11 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://ftp.gnu.org/gnu/automake/automake-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ######################################################################################################################
