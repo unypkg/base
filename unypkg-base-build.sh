@@ -70,6 +70,8 @@ EOF
 # This only works interactively
 # gh auth login --with-token #<<<"$UNY_AUTO_PAT"
 
+set -v
+
 ### Add uny user
 groupadd uny
 useradd -s /bin/bash -g uny -m -k /dev/null uny
@@ -992,7 +994,7 @@ Building temporary system as uny user
 EOF
 
 # Change ownership to uny
-chown -R uny:uny /uny/sources/*
+chown -R uny:uny "$UNY"/*
 
 sudo -i -u uny bash <<"EOFUNY"
 set -vx
