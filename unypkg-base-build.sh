@@ -70,8 +70,6 @@ EOF
 # This only works interactively
 # gh auth login --with-token #<<<"$UNY_AUTO_PAT"
 
-set -v
-
 ### Add uny user
 groupadd uny
 useradd -s /bin/bash -g uny -m -k /dev/null uny
