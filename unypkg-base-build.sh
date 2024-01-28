@@ -2966,10 +2966,10 @@ make -j"$(nproc)"
 
 ulimit -s 32768
 
-chown -Rv tester .
+chown -R tester .
 su tester -c "PATH=$PATH make -k -j$(nproc) check"
 
-chown -Rv root:root .
+chown -R root:root .
 make install
 
 ln -sv gcc /uny/pkg/"$pkgname"/"$pkgver"/bin/cc
@@ -3044,10 +3044,10 @@ unset LD_RUN_PATH
 make -j"$(nproc)"
 make -j"$(nproc)" html
 
-chown -Rv tester .
+chown -R tester .
 su tester -c "PATH=$PATH make -j$(nproc) check"
 
-chown -Rv root:root .
+chown -R root:root .
 make install
 
 ####################################################
@@ -3131,7 +3131,7 @@ unset LD_RUN_PATH
 
 make -j"$(nproc)"
 
-chown -Rv tester .
+chown -R tester .
 su -s expect tester <<EOF
 set timeout -1
 spawn make tests
@@ -3140,7 +3140,7 @@ lassign [wait] _ _ _ value
 exit $value
 EOF
 
-chown -Rv root:root .
+chown -R root:root .
 make install
 
 ln -sv bash /uny/pkg/"$pkgname"/"$pkgver"/bin/sh
@@ -3388,11 +3388,11 @@ make -j"$(nproc)"
 
 make NON_ROOT_USERNAME=tester -j"$(nproc)" check-root
 echo "dummy:x:102:tester" >>/etc/group
-chown -Rv tester .
+chown -R tester .
 su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
 sed -i '/dummy/d' /etc/group
 
-chown -Rv root .
+chown -R root .
 make install
 
 mkdir -pv /uny/pkg/"$pkgname"/"$pkgver"/sbin
@@ -3482,10 +3482,10 @@ esac
 
 make -j"$(nproc)"
 
-chown -Rv tester .
+chown -R tester .
 su tester -c "PATH=$PATH make -j$(nproc) check"
 
-chown -Rv root .
+chown -R root .
 make install
 
 ####################################################
@@ -3659,10 +3659,10 @@ unset LD_RUN_PATH
 
 make -j"$(nproc)"
 
-chown -Rv tester .
+chown -R tester .
 su tester -c "make -k -j$(nproc) check"
 
-chown -Rv root:root .
+chown -R root:root .
 make install
 
 ####################################################
