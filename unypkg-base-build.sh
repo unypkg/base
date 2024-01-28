@@ -1001,7 +1001,7 @@ set -vx
 ######################################################################################################################
 ### Functions
 
-cat >"$UNY"/build/stage_functions <<"EOF"
+cat >/uny/build/stage_functions <<"EOF"
 function unpack_cd {
     cd "$UNY"/sources/ || exit
     [[ ! -d $(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u) ]] && tar xf "$pkgname"*.tar.*
