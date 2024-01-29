@@ -1572,6 +1572,7 @@ cd build || exit
     --disable-libatomic \
     --disable-libgomp \
     --disable-libquadmath \
+    --disable-libsanitizer \
     --disable-libssp \
     --disable-libvtv \
     --enable-languages=c,c++
