@@ -1543,7 +1543,7 @@ tar -xf ../mpfr-*.tar.xz
 mv -v mpfr-* mpfr
 tar -xf ../gmp-*.tar.xz
 mv -v gmp-* gmp
-tar -xf ../mpc-*.tar.gz
+tar -xf ../mpc-*.tar.xz
 mv -v mpc-* mpc
 
 case $(uname -m) in
