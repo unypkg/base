@@ -1167,7 +1167,7 @@ echo "rootsbindir=/usr/sbin" >configparms
     --prefix=/usr \
     --host="$UNY_TGT" \
     --build="$(../scripts/config.guess)" \
-    --enable-kernel=3.2 \
+    --enable-kernel=4.14 \
     --with-headers="$UNY"/usr/include \
     libc_cv_slibdir=/usr/lib
 
@@ -1191,7 +1191,7 @@ unpack_cd
 mkdir -v build
 cd build || exit
 
-gccver="$(echo /uny/tools/x86_64-uny-linux-gnu/include/c++/* | grep -o "[^/]*$")"
+gccver="$(echo /uny/sources/gcc-* | grep -Eo "[0-9]+(\.[0-9]+)*" | sort -u)"
 
 ../libstdc++-v3/configure \
     --host="$UNY_TGT" \
@@ -1292,7 +1292,8 @@ unpack_cd
     --host="$UNY_TGT" \
     --build="$(build-aux/config.guess)" \
     --enable-install-program=hostname \
-    --enable-no-install-program=kill,uptime
+    --enable-no-install-program=kill,uptime \
+    gl_cv_macro_MB_CUR_MAX_good=y
 
 make -j"$(nproc)"
 make DESTDIR=$UNY install
@@ -1311,7 +1312,9 @@ pkgname="diffutils"
 
 unpack_cd
 
-./configure --prefix=/usr --host="$UNY_TGT"
+./configure --prefix=/usr \
+    --host="$UNY_TGT" \
+    --build=$(./build-aux/config.guess)
 
 make -j"$(nproc)"
 make DESTDIR=$UNY install
@@ -1388,7 +1391,8 @@ pkgname="grep"
 unpack_cd
 
 ./configure --prefix=/usr \
-    --host="$UNY_TGT"
+    --host="$UNY_TGT" \
+    --build=$(./build-aux/config.guess)
 
 make -j"$(nproc)"
 make DESTDIR=$UNY install
@@ -1417,9 +1421,9 @@ pkgname="make"
 
 unpack_cd
 
-sed -e '/ifdef SIGPIPE/,+2 d' \
-    -e '/undef  FATAL_SIG/i FATAL_SIG (SIGPIPE);' \
-    -i src/main.c
+#sed -e '/ifdef SIGPIPE/,+2 d' \
+#    -e '/undef  FATAL_SIG/i FATAL_SIG (SIGPIPE);' \
+#    -i src/main.c
 
 ./configure --prefix=/usr \
     --without-guile \
@@ -1505,6 +1509,8 @@ cleanup
 pkgname="binutils"
 
 unpack_cd
+
+sed '6009s/$add_dir//' -i ltmain.sh
 
 mkdir -v build
 cd build || exit
