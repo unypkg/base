@@ -173,7 +173,7 @@ function archiving_source {
     rm -rf "$pkg_git_repo_dir"/.git "$pkg_git_repo_dir"/.git*
     [[ -d "$pkgname-$latest_ver" ]] && rm -rf "$pkgname-$latest_ver"
     mv -v "$pkg_git_repo_dir" "$pkgname-$latest_ver"
-    XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
+    XZ_OPT="-0 --threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
 }
 
 function repo_clone_version_archive {
@@ -1917,7 +1917,9 @@ umount $UNY/dev/pts
 umount $UNY/{sys,proc,run,dev}
 
 cd $UNY || exit
-XZ_OPT="-0 --threads=0" tar -cJpf /home/lfs-temp-tools-11.3.tar.xz .
+XZ_OPT="-0 --threads=0" tar -cJpf /home/stage1-"$uny_build_date_now".tar.xz .
+gh -R unypkg/stage1 release create stage1-"$uny_build_date_now" --generate-notes \
+    /home/stage1-"$uny_build_date_now".tar.xz
 
 ######################################################################################################################
 ######################################################################################################################
