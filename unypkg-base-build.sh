@@ -225,23 +225,16 @@ archiving_source
 ######################################################################################################################
 ### GCC
 pkgname="gcc"
-pkggit="https://gcc.gnu.org/git/gcc.git refs/heads/releases/gcc*"
-gitdepth="--depth=25"
+pkggit=" https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc*"
+gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --heads --sort="v:refname" $pkggit | tail --lines=1)"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | tail --lines=1)"
 # shellcheck disable=SC2086
 latest_ver="$(git ls-remote --refs --sort="v:refname" $pkggit | grep -oE "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sed "s|gcc-||" | sort -n | tail -n 1)"
 
-check_for_repo_and_create
-git_clone_source_repo
-
-latest_commit_id="$(git -C "$pkg_git_repo_dir" log --perl-regexp --author='^((?!GCC Administrator).*)$' -n 1 | grep "commit" | cut -d" " -f 2)"
-git -C "$pkg_git_repo_dir" checkout "$latest_commit_id"
-
-version_details
-archiving_source
+repo_clone_version_archive
 
 ######################################################################################################################
 ######################################################################################################################
