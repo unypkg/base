@@ -42,12 +42,12 @@ ln -fs /bin/bash /bin/sh
 export UNY=/uny
 tee >/root/.bash_profile <<EOF
 export UNY=/uny
-if [ -n "$BASH_VERSION" ]; then
+#if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-        . "$HOME/.bashrc"
-    fi
-fi
+    #if [ -f "$HOME/.bashrc" ]; then
+    #    . "$HOME/.bashrc"
+    #fi
+#fi
 EOF
 # shellcheck source=/dev/null
 source /root/.bash_profile
@@ -882,14 +882,14 @@ repo_clone_version_archive
 
 ######################################################################################################################
 ### Pkg-config
-pkgname="pkg-config"
-pkggit="https://gitlab.freedesktop.org/pkg-config/pkg-config.git refs/tags/pkg-config-[0-9.]*"
+pkgname="pkgconf"
+pkggit="https://github.com/pkgconf/pkgconf refs/tags/pkgconf-[0-9.]*"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "pkg-config-[0-9]([.0-9]+)+$" | tail -n 1)"
-latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|pkg-config-||")"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "pkgconf-[0-9]([.0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|pkgconf-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 repo_clone_version_archive
@@ -3081,8 +3081,8 @@ done
 ldconfig -v
 
 ######################################################################################################################
-### Pkg-config
-pkgname="pkg-config"
+### Pkgconf
+pkgname="pkgconf"
 
 version_verbose_log_clean_unpack_cd
 get_env_var_values
@@ -3094,13 +3094,14 @@ get_include_paths
 unset LD_RUN_PATH
 
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
-    --with-internal-glib \
-    --disable-host-tool \
-    --docdir=/uny/pkg/"$pkgname"/"$pkgver"/share/doc/pkg-config
+    --disable-static \
+    --docdir=/uny/pkg/"$pkgname"/"$pkgver"/share/doc/pkgconf
 
 make -j"$(nproc)"
-make -j"$(nproc)" check
 make install
+
+ln -sv pkgconf   /uny/pkg/"$pkgname"/"$pkgver"/bin/pkg-config
+ln -sv pkgconf.1 /uny/pkg/"$pkgname"/"$pkgver"/share/man/man1/pkg-config.1
 
 ####################################################
 ### End of individual build script
