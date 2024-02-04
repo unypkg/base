@@ -574,7 +574,8 @@ pkgname="perl"
 pkggit="https://github.com/Perl/perl5.git refs/tags/v[0-9.]*"
 gitdepth="--depth=1"
 
-versubnums="$(git ls-remote --refs --tags --sort="v:refname" "$pkggit" | grep -E "v[0-9]([.0-9]+)+$" | tail -n 20 | grep -Eo "[^v0-9][.0-9]+\." | sed "s|\.||g" | sort -u)"
+# shellcheck disable=SC2086
+versubnums="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9]([.0-9]+)+$" | tail -n 20 | grep -Eo "[^v0-9][.0-9]+\." | sed "s|\.||g" | sort -u)"
 versubnum_even="$(for i in $versubnums; do if [[ $((i % 2)) -eq 0 ]]; then echo "$i"; fi; done)"
 versubnum_even_latest="$(echo "$versubnum_even" | tail -n 1)"
 
@@ -1841,7 +1842,7 @@ cleanup
 ######################################################################################################################
 ### Python
 
-pkgname="Python"
+pkgname="python"
 
 unpack_cd
 
