@@ -574,9 +574,13 @@ pkgname="perl"
 pkggit="https://github.com/Perl/perl5.git refs/tags/v[0-9.]*"
 gitdepth="--depth=1"
 
+versubnums="$(git ls-remote --refs --tags --sort="v:refname" "$pkggit" | grep -E "v[0-9]([.0-9]+)+$" | tail -n 20 | grep -Eo "[^v0-9][.0-9]+\." | sed "s|\.||g" | sort -u)"
+versubnum_even="$(for i in $versubnums; do if [[ $((i % 2)) -eq 0 ]]; then echo "$i"; fi; done)"
+versubnum_even_latest="$(echo "$versubnum_even" | tail -n 1)"
+
 ### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9]([.0-9]+)+$" | tail -n 1)"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" https://github.com/Perl/perl5.git refs/tags/v[0-9]."$versubnum_even_latest".* | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
