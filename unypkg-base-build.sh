@@ -80,7 +80,7 @@ mkdir -pv "$UNY"/sources/unygit
 chmod -v a+wt "$UNY"/sources
 
 mkdir -pv "$UNY"/{etc,var} "$UNY"/usr/{bin,lib,sbin}
-mkdir -pv "$UNY"/build/logs
+mkdir -pv "$UNY"/uny/build/logs
 
 for i in bin lib sbin; do
     ln -sv usr/$i "$UNY"/$i
@@ -1009,7 +1009,7 @@ set -vx
 ######################################################################################################################
 ### Functions
 
-cat >/uny/build/stage_functions <<"EOF"
+cat >/uny/uny/build/stage_functions <<"EOF"
 function unpack_cd {
     cd "$UNY"/sources/ || exit
     [[ ! -d $(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u) ]] && tar xf "$pkgname"*.tar.*
@@ -1041,7 +1041,7 @@ PATH=$UNY/tools/bin:$PATH
 CONFIG_SITE=$UNY/usr/share/config.site
 export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
 MAKEFLAGS="-j$(nproc)"
-source "$UNY"/build/stage_functions
+source "$UNY"/uny/build/stage_functions
 EOF
 EOFUNY
 
@@ -1785,7 +1785,7 @@ chmod -v 600 /var/log/btmp
 ### Functions
 
 # shellcheck source=/dev/null
-source /build/stage_functions
+source /uny/build/stage_functions
 
 ######################################################################################################################
 ### Gettext
