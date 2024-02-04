@@ -1459,7 +1459,7 @@ pkgname="sed"
 unpack_cd
 
 ./configure --prefix=/usr   \
-    --host=$LFS_TGT \
+    --host=$UNY_TGT \
     --build=$(./build-aux/config.guess)
 
 make -j"$(nproc)"
