@@ -1827,6 +1827,7 @@ unpack_cd
 sh Configure -des \
     -Dprefix=/usr \
     -Dvendorprefix=/usr \
+    -Duseshrplib \
     -Dprivlib=/usr/lib/perl5/core_perl \
     -Darchlib=/usr/lib/perl5/core_perl \
     -Dsitelib=/usr/lib/perl5/site_perl \
@@ -3394,7 +3395,7 @@ sh Configure -des \
     -Dvendorarch=/uny/pkg/"$pkgname"/"$pkgver"/lib/perl5/vendor_perl \
     -Dman1dir=/uny/pkg/"$pkgname"/"$pkgver"/share/man/man1 \
     -Dman3dir=/uny/pkg/"$pkgname"/"$pkgver"/share/man/man3 \
-    -Dpager="${less_bin[*]}" \
+    -Dpager="${less_bin[*]} -isR" \
     -Duseshrplib \
     -Dusethreads
 
