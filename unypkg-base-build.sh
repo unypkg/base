@@ -1210,8 +1210,9 @@ echo "rootsbindir=/usr/sbin" >configparms
     --prefix=/usr \
     --host="$UNY_TGT" \
     --build="$(../scripts/config.guess)" \
-    --enable-kernel=4.14 \
+    --enable-kernel=4.19 \
     --with-headers="$UNY"/usr/include \
+    --disable-nscd \
     libc_cv_slibdir=/usr/lib
 
 make -j"$(nproc)"
@@ -2164,9 +2165,9 @@ echo "rootsbindir=/uny/pkg/$pkgname/$pkgver/sbin" >configparms
 # Check how to automatically determin kernel version for this to automate future versions
 ../configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
     --disable-werror \
-    --enable-kernel=3.2 \
+    --enable-kernel=4.19 \
     --enable-stack-protector=strong \
-    --with-headers=/usr/include \
+    --disable-nscd \
     libc_cv_slibdir=/uny/pkg/"$pkgname"/"$pkgver"/lib
 
 make -j"$(nproc)"
