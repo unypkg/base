@@ -42,6 +42,7 @@ ln -fs /bin/bash /bin/sh
 export UNY=/uny
 tee >/root/.bash_profile <<EOF
 export UNY=/uny
+PS1='\u:\w\$ '
 #if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     #if [ -f "$HOME/.bashrc" ]; then
@@ -715,7 +716,15 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+autoreconf -i
+cd /uny/sources || exit
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### Tcl
