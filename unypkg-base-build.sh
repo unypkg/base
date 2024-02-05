@@ -880,6 +880,24 @@ latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 repo_clone_version_archive
 
 ######################################################################################################################
+### Libxcrypt
+pkgname="libxcrypt"
+pkggit="https://github.com/besser82/libxcrypt.git refs/tags/v*"
+gitdepth="--depth=1"
+
+### Get version info from git remote
+# shellcheck disable=SC2086
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9]\.([.0-9]+)+$" | tail -n 1)"
+latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
+latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
+
+check_for_repo_and_create
+
+wget https://github.com/besser82/libxcrypt/releases/download/v"$latest_ver"/libxcrypt-"$latest_ver".tar.xz
+
+version_details
+
+######################################################################################################################
 ### Shadow
 pkgname="shadow"
 pkggit="https://github.com/shadow-maint/shadow.git refs/tags/[0-9.]*"
@@ -887,11 +905,15 @@ gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9]([.0-9]+)+$" | tail -n 1)"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "[0-9]\.([.0-9]+)+$" | tail -n 1)"
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3)"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+
+wget https://github.com/shadow-maint/shadow/releases/download/"$latest_ver"/shadow-"$latest_ver".tar.xz
+
+version_details
 
 ######################################################################################################################
 ### Pkg-config
@@ -2980,6 +3002,36 @@ dependencies_file_and_unset_vars
 verbose_off_timing_end
 
 ######################################################################################################################
+### Libxcrypt
+pkgname="libxcrypt"
+
+version_verbose_log_clean_unpack_cd
+get_env_var_values
+get_include_paths_temp
+
+####################################################
+### Start of individual build script
+
+unset LD_RUN_PATH
+
+./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver"\
+    --enable-hashes=strong,glibc \
+    --enable-obsolete-api=no \
+    --disable-static \
+    --disable-failure-tokens
+
+make -j"$(nproc)"
+make -j"$(nproc)" check
+make install
+
+####################################################
+### End of individual build script
+
+add_to_paths_files
+dependencies_file_and_unset_vars
+verbose_off_timing_end
+
+######################################################################################################################
 ### Shadow
 pkgname="shadow"
 
@@ -3008,6 +3060,7 @@ touch /usr/bin/passwd
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
     --sysconfdir=/etc \
     --disable-static \
+    --with-{b,yes}crypt \
     --with-group-name-max-length=32
 
 make -j"$(nproc)"
