@@ -720,14 +720,10 @@ latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 check_for_repo_and_create
-git_clone_source_repo
 
-cd "$pkg_git_repo_dir" || exit
-autoreconf -i
-cd /uny/sources || exit
+wget https://github.com/westes/flex/releases/download/v"$latest_ver"/flex-"$latest_ver".tar.gz
 
 version_details
-archiving_source
 
 ######################################################################################################################
 ### Tcl
