@@ -202,6 +202,9 @@ latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 ## To-Do: Make test with git diff --binary for glibc-2.37 release and with security backports from release/2.37/master
 repo_clone_version_archive
 
+newesttimedatafile="$(curl https://data.iana.org/time-zones/releases/ | grep -Eo "\"tzdata[0-9]+[a-z]+.tar.gz\"" | sed 's|"||g' | sort --version-sort | tail -n 1)"
+wget https://data.iana.org/time-zones/releases/"$newesttimedatafile"
+
 ######################################################################################################################
 ### Binutils
 pkgname="binutils"
@@ -2246,7 +2249,7 @@ rpc: files
 # End /etc/nsswitch.conf
 EOF
 
-tar -xf ../../tzdata2022g.tar.gz
+tar -xf ../../tzdata*.tar.gz
 
 ZONEINFO=/uny/pkg/$pkgname/$pkgver/share/zoneinfo
 mkdir -pv "$ZONEINFO"/{posix,right}
