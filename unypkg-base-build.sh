@@ -3499,7 +3499,7 @@ sh Configure -des \
     -Dusethreads
 
 make -j"$(nproc)"
-make -j"$(nproc)" test
+TEST_JOBS=$(nproc) make test_harness
 make install
 
 unset BUILD_ZLIB BUILD_BZIP2
@@ -3523,10 +3523,6 @@ get_include_paths
 ### Start of individual build script
 
 unset LD_RUN_PATH
-
-sed -e 's/SECONDS|/&SHLVL|/' \
-    -e '/BASH_ARGV=/a\        /^SHLVL=/ d' \
-    -i.orig tests/local.at
 
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver"
 
@@ -3557,7 +3553,7 @@ unset LD_RUN_PATH
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" --docdir=/uny/pkg/"$pkgname"/"$pkgver"/share/doc/automake
 
 make -j"$(nproc)"
-make -j"$(nproc)" check
+make -j$(($(nproc)>4?$(nproc):4)) check
 make install
 
 ####################################################
@@ -3590,10 +3586,10 @@ FORCE_UNSAFE_CONFIGURE=1 ./configure \
 make -j"$(nproc)"
 
 make NON_ROOT_USERNAME=tester -j"$(nproc)" check-root
-echo "dummy:x:102:tester" >>/etc/group
+groupadd -g 102 dummy -U tester
 chown -R tester .
 su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
-sed -i '/dummy/d' /etc/group
+groupdel dummy
 
 chown -R root .
 make install
@@ -3655,8 +3651,12 @@ sed -i 's/extras//' Makefile.in
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver"
 
 make -j"$(nproc)"
-make -j"$(nproc)" check
-make LN='ln -f' install
+
+chown -R tester .
+su tester -c "PATH=$PATH make check"
+
+rm -f /usr/bin/gawk-5.3.0
+make install
 
 ####################################################
 ### End of individual build script
@@ -3678,10 +3678,7 @@ get_include_paths
 
 unset LD_RUN_PATH
 
-case $(uname -m) in
-i?86) TIME_T_32_BIT_OK=yes ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" --localstatedir=/var/lib/locate ;;
-x86_64) ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" --localstatedir=/var/lib/locate ;;
-esac
+./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" --localstatedir=/var/lib/locate
 
 make -j"$(nproc)"
 
@@ -3737,14 +3734,13 @@ get_include_paths
 
 unset LD_RUN_PATH
 
-sed -e '/ifdef SIGPIPE/,+2 d' \
-    -e '/undef  FATAL_SIG/i FATAL_SIG (SIGPIPE);' \
-    -i src/main.c
-
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver"
 
 make -j"$(nproc)"
-make -j"$(nproc)" check
+
+chown -R tester .
+su tester -c "PATH=$PATH make check"
+
 make install
 
 ####################################################
@@ -3845,8 +3841,11 @@ get_include_paths
 
 unset LD_RUN_PATH
 
+sed -i '/test_mkfds/s/^/#/' tests/helpers/Makemodule.am
+
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime \
     --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+    --runstatedir=/run \
     --disable-chfn-chsh \
     --disable-login \
     --disable-nologin \
@@ -3890,7 +3889,6 @@ get_include_paths
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
     --enable-shared \
     --with-system-expat \
-    --with-system-ffi \
     --enable-optimizations
 
 make -j"$(nproc)"
