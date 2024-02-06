@@ -3062,6 +3062,7 @@ touch /usr/bin/passwd
     --sysconfdir=/etc \
     --disable-static \
     --with-{b,yes}crypt \
+    --without-libbsd \
     --with-group-name-max-length=32
 
 make -j"$(nproc)"
