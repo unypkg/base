@@ -3119,8 +3119,8 @@ cd build || exit
     --enable-default-ssp \
     --disable-multilib \
     --disable-bootstrap \
-    --with-system-zlib \
-    --with-slibdir="${glibc_dir[*]}"
+    --disable-fixincludes \
+    --with-system-zlib
 
 make -j"$(nproc)"
 
