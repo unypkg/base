@@ -3314,6 +3314,13 @@ make install
 
 ln -sv bash /uny/pkg/"$pkgname"/"$pkgver"/bin/sh
 
+tee /bin/bash <<'EOF'
+#!/usr/bin/env bash 
+exec bash "$@"
+EOF
+chmod +x /bin/bash
+ln -sfv bash /bin/sh 
+
 ####################################################
 ### End of individual build script
 
@@ -3900,12 +3907,13 @@ rm -rf /{bin,sbin,lib,lib64,usr,media,mnt,opt,srv,boot}
 mkdir -pv /usr/bin
 ln -sv /usr/bin /bin
 ln -sv /uny/pkg/coreutils/*/bin/env /usr/bin/env
+
 tee /bin/bash <<'EOF'
 #!/usr/bin/env bash 
 exec bash "$@"
 EOF
 chmod +x /bin/bash
-ln -sv bash /bin/sh 
+ln -sfv bash /bin/sh 
 EOFUNY4
 
 ######################################################################################################################
