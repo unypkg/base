@@ -3389,6 +3389,9 @@ chroot "$UNY" /usr/bin/env -i \
     PS1='uny | \u:\w\$ ' \
     PATH="$UNY_PATH" \
     bash -x <<'EOFUNY4'
+# shellcheck source=/dev/null
+source /uny/build/functions
+
 ######################################################################################################################
 ### Libtool
 pkgname="libtool"
