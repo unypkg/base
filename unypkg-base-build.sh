@@ -174,7 +174,7 @@ function archiving_source {
     rm -rf "$pkg_git_repo_dir"/.git "$pkg_git_repo_dir"/.git*
     [[ -d "$pkgname-$latest_ver" ]] && rm -rf "$pkgname-$latest_ver"
     mv -v "$pkg_git_repo_dir" "$pkgname-$latest_ver"
-    XZ_OPT="-0 --threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
+    XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
 }
 
 function repo_clone_version_archive {
@@ -3914,6 +3914,13 @@ verbose_off_timing_end
 ######################################################################################################################
 ######################################################################################################################
 ### System cleanup
+
+### Testing if everything is found in /uny/pkg that is in /usr/bin
+echo "Testing if everything is found in /uny/pkg that is in /usr/bin"
+for bin in {/bin/*,/sbin/*}; do
+    type "$(basename "$bin")" | grep -v "/uny"
+done
+
 # shellcheck disable=SC2114
 rm -rf /{bin,sbin,lib,lib64,usr,media,mnt,opt,srv,boot}
 
@@ -3937,28 +3944,6 @@ EOFUNY4
 mountpoint -q $UNY/dev/shm && umount $UNY/dev/shm
 umount $UNY/dev/pts
 umount $UNY/{sys,proc,run,dev}
-
-######################################################################################################################
-######################################################################################################################
-### Testing if everything is found in /uny/pkg folders
-
-cat <<EOF
-
-
-######################################################################################################################
-######################################################################################################################
-
-Testing if everything is found in /uny/pkg folders
-
-######################################################################################################################
-######################################################################################################################
-
-
-EOF
-
-for bin in {/bin/*,/sbin/*}; do
-    type "$(basename "$bin")" | grep -v "/uny"
-done
 
 ######################################################################################################################
 ######################################################################################################################
@@ -4000,7 +3985,7 @@ for pkg in /var/uny/sources/vdet-*-new; do
     vdet_content="$(cat "$pkg")"
     vdet_new_file="$pkg"
     pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
-    pkgv="$(echo "$vdet_content" | cut -d" " -f1)"
+    pkgv="$(echo "$vdet_content" | head -n 1)"
 
     cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
     cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
