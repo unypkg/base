@@ -3994,29 +3994,17 @@ cd $UNY/pkg || exit
 for pkg in /var/uny/sources/vdet-*-new; do
     vdet_content="$(cat "$pkg")"
     vdet_new_file="$pkg"
-    pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
+    pkg="$(echo "$pkg" | grep -Eo "vdet.*new$" | sed -e "s|vdet-||" -e "s|-new||")"
     pkgv="$(echo "$vdet_content" | head -n 1)"
 
     cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
-    cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
+
+    source_archive_orig="$(echo /var/uny/sources/"$pkg"-"$pkgv".tar.*)"
+    source_archive_new="$(echo "$source_archive_orig" | sed -r -e "s|^.*/||" -e "s|(\.tar.*$)|-source\1|")"
+    cp -a "$source_archive_orig" "$source_archive_new"
     cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
     # To-do: Also upload source with next command
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
         "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$pkg"-"$pkgv"-source.tar.xz
-done
-
-for pkg in /var/uny/sources/vdet-make-new; do
-    echo "$pkg"
-
-    vdet_content="$(cat "$pkg")"
-    vdet_new_file="$pkg"
-    pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
-    pkgv="$(echo "$vdet_content" | head -n 1)"
-
-    cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
-    cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
-    cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
-    XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
-
 done
