@@ -1231,7 +1231,7 @@ echo "rootsbindir=/usr/sbin" >configparms
     --prefix=/usr \
     --host="$UNY_TGT" \
     --build="$(../scripts/config.guess)" \
-    --enable-kernel=4.19 \
+    --enable-kernel=5.15 \
     --with-headers="$UNY"/usr/include \
     --disable-nscd \
     libc_cv_slibdir=/usr/lib
@@ -2186,7 +2186,7 @@ echo "rootsbindir=/uny/pkg/$pkgname/$pkgver/sbin" >configparms
 # Check how to automatically determin kernel version for this to automate future versions
 ../configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
     --disable-werror \
-    --enable-kernel=4.19 \
+    --enable-kernel=5.15 \
     --enable-stack-protector=strong \
     --disable-nscd \
     libc_cv_slibdir=/uny/pkg/"$pkgname"/"$pkgver"/lib
