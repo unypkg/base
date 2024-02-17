@@ -245,12 +245,12 @@ repo_clone_version_archive
 ######################################################################################################################
 ######################################################################################################################
 ### Exit if Glibc, Binutils or GCC are not newer
-if [[ -f vdet-glibc-new || -f vdet-binutils-new || -f vdet-gcc-new ]]; then
-    echo "Continuing"
-else
-    echo "No new version of Glibc, Binutils or GCC found, exiting..."
-    exit
-fi
+#if [[ -f vdet-glibc-new || -f vdet-binutils-new || -f vdet-gcc-new ]]; then
+#    echo "Continuing"
+#else
+#    echo "No new version of Glibc, Binutils or GCC found, exiting..."
+#    exit
+#fi
 
 ######################################################################################################################
 ### Linux API Headers
@@ -3963,6 +3963,8 @@ Cleaning and compressing final build system
 
 EOF
 
+set -vx
+
 mkdir -pv /var/uny/build
 mv -v /uny/sources /var/uny/sources
 rm -rfv /uny/uny/include
@@ -3994,4 +3996,19 @@ for pkg in /var/uny/sources/vdet-*-new; do
     # To-do: Also upload source with next command
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
         "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$pkg"-"$pkgv"-source.tar.xz
+done
+
+for pkg in /var/uny/sources/vdet-make-new; do
+    echo "$pkg"
+
+    vdet_content="$(cat "$pkg")"
+    vdet_new_file="$pkg"
+    pkg="$(echo "$pkg" | grep -Eo "[^\-]*-new$" | sed "s|-new||")"
+    pkgv="$(echo "$vdet_content" | head -n 1)"
+
+    cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
+    cp -a /var/uny/sources/"$pkg"-"$pkgv".tar.xz "$pkg"-"$pkgv"-source.tar.xz
+    cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
+    XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
+
 done
