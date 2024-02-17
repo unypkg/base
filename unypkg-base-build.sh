@@ -27,7 +27,7 @@ fi
 
 apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev \
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
-    patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev
+    patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
 
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
@@ -635,7 +635,15 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
-repo_clone_version_archive
+check_for_repo_and_create
+git_clone_source_repo
+
+cd "$pkg_git_repo_dir" || exit
+./autogen.sh
+cd /uny/sources || exit
+
+version_details
+archiving_source
 
 ######################################################################################################################
 ### zLib
