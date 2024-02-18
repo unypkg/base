@@ -1666,7 +1666,6 @@ set +vx
 ### Timing end
 duration=$SECONDS
 echo "$((duration / 60)) minutes and $((duration % 60)) seconds elapsed."
-
 EOFUNY
 
 ######################################################################################################################
@@ -1981,7 +1980,6 @@ rm -rf /tools
 ### Timing end
 duration=$SECONDS
 echo "$((duration / 60)) minutes and $((duration % 60)) seconds elapsed."
-
 EOFUNY2
 
 ######################################################################################################################
