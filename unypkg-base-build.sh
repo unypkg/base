@@ -2033,6 +2033,7 @@ chroot "$UNY" /usr/bin/env -i \
     PS1='uny | \u:\w\$ ' \
     PATH=/usr/bin:/usr/sbin \
     bash -x <<'EOFUNY3'
+set -vx
 ######################################################################################################################
 ######################################################################################################################
 ### In the Chroot
@@ -3350,7 +3351,6 @@ ln -sfv bash /bin/sh
 add_to_paths_files
 dependencies_file_and_unset_vars
 verbose_off_timing_end
-
 EOFUNY3
 
 ######################################################################################################################
@@ -3399,6 +3399,7 @@ chroot "$UNY" /usr/bin/env -i \
     PS1='uny | \u:\w\$ ' \
     PATH="$UNY_PATH" \
     bash -x <<'EOFUNY4'
+set -vx
 # shellcheck source=/dev/null
 source /uny/build/functions
 
