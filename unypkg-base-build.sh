@@ -1842,6 +1842,7 @@ install -o tester -d /home/tester
 ##########################
 #exec /usr/bin/bash --login
 /usr/bin/bash --login
+set -vx
 
 touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
