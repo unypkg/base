@@ -2098,5 +2098,5 @@ for pkg in /var/uny/sources/vdet-*-new; do
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
     # To-do: Also upload source with next command
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$pkg"-"$pkgv"-source.tar.xz
+        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
 done
