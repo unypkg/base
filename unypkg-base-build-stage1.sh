@@ -126,6 +126,7 @@ uny_build_date_now="$(date -d @"$uny_build_date_seconds_now" +"%Y-%m-%dT%H.%M.%S
 ######################################################################################################################
 ### functions
 
+cat >"$UNY"/uny/build/download_functions <<"EOF"
 function check_for_repo_and_create {
     # Create repo if it doesn't exist
     if [[ $(curl -s -o /dev/null -w "%{http_code}" https://github.com/unypkg/"$pkgname") != "200" ]]; then
@@ -181,6 +182,9 @@ function repo_clone_version_archive {
     version_details
     archiving_source
 }
+EOF
+# shellcheck disable=SC1091
+source "$UNY"/uny/build/download_functions
 
 ######################################################################################################################
 ######################################################################################################################
@@ -265,7 +269,7 @@ latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 check_for_repo_and_create
 git_clone_source_repo
 
-# shellcheck disable=SC2086
+# shellcheck disable=SC2086,SC2154
 latest_ver="$(git ls-remote --refs --tags --sort="v:refname" $pkg_git_repo | grep -Ev "\-rc[0-9]" | grep -oE "[0-9]*(([0-9]+\.)*[0-9]+)" | tail -n 1)"
 
 version_details
@@ -1029,8 +1033,10 @@ version_details
 
 ######################################################################################################################
 ### Automake
+# shellcheck disable=SC2034
 pkgname="automake"
 pkggit="https://git.savannah.gnu.org/git/automake.git refs/tags/v[0-9.]*"
+# shellcheck disable=SC2034
 gitdepth="--depth=1"
 
 ### Get version info from git remote
