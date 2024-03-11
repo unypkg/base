@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 
 ## This is the unypkg base system build script - stage 1
 ## Created by michacassola mich@casso.la
@@ -53,22 +54,6 @@ EOF
 # shellcheck source=/dev/null
 source /root/.bash_profile
 
-### Setup Git and GitHub
-# Setup Git User -
-git config --global user.name "uny-auto"
-git config --global user.email "uny-auto@unyqly.com"
-git config --global credential.helper store
-git config --global advice.detachedHead false
-
-git credential approve <<EOF
-protocol=https
-url=https://github.com
-username=uny-auto
-password="$UNY_AUTO_PAT"
-EOF
-
-set -xv
-
 ### Add uny user
 groupadd uny
 useradd -s /bin/bash -g uny -m -k /dev/null uny
@@ -80,6 +65,24 @@ chmod -v a+wt "$UNY"/sources
 
 mkdir -pv "$UNY"/{etc,var} "$UNY"/usr/{bin,lib,sbin}
 mkdir -pv "$UNY"/uny/build/logs
+
+### Setup Git and GitHub in GitHub Actions
+cat >"$UNY"/uny/build/github_conf <<"GITEOF"
+git config --global user.name "uny-auto"
+git config --global user.email "uny-auto@unyqly.com"
+git config --global credential.helper store
+git config --global advice.detachedHead false
+
+git credential approve <<EOF
+protocol=https
+url=https://github.com
+username=uny-auto
+password="$UNY_AUTO_PAT"
+EOF
+GITEOF
+source "$UNY"/uny/build/github_conf
+
+set -xv
 
 for i in bin lib sbin; do
     ln -sv usr/$i "$UNY"/$i
@@ -183,7 +186,7 @@ function repo_clone_version_archive {
     archiving_source
 }
 EOF
-# shellcheck disable=SC1091
+
 source "$UNY"/uny/build/download_functions
 
 ######################################################################################################################
