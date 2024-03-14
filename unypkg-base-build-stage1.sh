@@ -30,13 +30,6 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
     patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
 
-### Getting Variables from files
-UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
-export UNY_AUTO_PAT
-# shellcheck disable=SC2034
-GH_TOKEN="$(cat GH_TOKEN)"
-export GH_TOKEN
-
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
 
@@ -68,6 +61,12 @@ mkdir -pv "$UNY"/uny/build/logs
 
 ### Setup Git and GitHub in GitHub Actions
 cat >"$UNY"/uny/build/github_conf <<"GITEOF"
+### Getting Variables from files
+UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+export UNY_AUTO_PAT
+GH_TOKEN="$(cat GH_TOKEN)"
+export GH_TOKEN
+
 git config --global user.name "uny-auto"
 git config --global user.email "uny-auto@unyqly.com"
 git config --global credential.helper store
