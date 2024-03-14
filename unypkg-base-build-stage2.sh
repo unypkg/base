@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 
 ## This is the unypkg base system build script - stage 2
 ## Created by michacassola mich@casso.la
@@ -53,17 +54,7 @@ source /root/.bash_profile
 
 ### Setup Git and GitHub
 # Setup Git User -
-git config --global user.name "uny-auto"
-git config --global user.email "uny-auto@unyqly.com"
-git config --global credential.helper store
-git config --global advice.detachedHead false
-
-git credential approve <<EOF
-protocol=https
-url=https://github.com
-username=uny-auto
-password="$UNY_AUTO_PAT"
-EOF
+source "$UNY"/uny/build/github_conf
 
 set -xv
 
