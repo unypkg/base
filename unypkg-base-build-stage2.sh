@@ -244,7 +244,8 @@ function dependencies_file_and_unset_vars {
     unset CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH LIBRARY_PATH LD_RUN_PATH LDFLAGS CFLAGS
 }
 
-function verbose_off_timing_end {
+function cleanup_verbose_off_timing_end {
+    rm -rf /sources/"$pkgname"*"$pkgver"
     shopt -u nocaseglob
     duration=$SECONDS
     echo "$((duration / 60)) minutes and $((duration % 60)) seconds elapsed."
@@ -398,7 +399,7 @@ unset ZONEINFO
 
 ln -sfv /uny/pkg/"$pkgname"/"$pkgver"/share/zoneinfo/Europe/Berlin /etc/localtime
 
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Linux API Headers
@@ -425,7 +426,7 @@ cp -rv usr/include /uny/pkg/"$pkgname"/"$pkgver"
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### zLib
@@ -453,7 +454,7 @@ rm -fv /uny/pkg/"$pkgname"/"$pkgver"/lib/libz.a
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Bzip2
@@ -491,7 +492,7 @@ done
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### XZ
@@ -517,7 +518,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Zstd
@@ -539,7 +540,7 @@ make prefix=/uny/pkg/"$pkgname"/"$pkgver" install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### File
@@ -562,7 +563,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Ncurses
@@ -593,7 +594,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Readline
@@ -623,7 +624,7 @@ make SHLIB_LIBS="-lncursesw" install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### M4
@@ -648,7 +649,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Bc
@@ -674,7 +675,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Flex
@@ -704,7 +705,7 @@ ln -sv flex /uny/pkg/"$pkgname"/"$pkgver"/bin/lex
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Tcl
@@ -764,7 +765,7 @@ ln -sfv tclsh"$pkgshortver" /uny/pkg/"$pkgname"/"$pkgver"/bin/tclsh
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Expect
@@ -807,7 +808,7 @@ mv -v /uny/pkg/tcl/*/bin/expect /uny/pkg/expect/*/bin/
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### DejaGNU
@@ -846,7 +847,7 @@ EOF
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Binutils
@@ -893,7 +894,7 @@ rm -fv /uny/pkg/"$pkgname"/"$pkgver"/share/man/man1/{gprofng,gp-*}.1
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### GMP
@@ -930,7 +931,7 @@ make install-html
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### MPFR
@@ -966,7 +967,7 @@ make install-html
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### MPC
@@ -997,7 +998,7 @@ make install-html
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Gettext
@@ -1027,7 +1028,7 @@ chmod -v 0755 /uny/pkg/"$pkgname"/"$pkgver"/lib/preloadable_libintl.so
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Attr
@@ -1057,7 +1058,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Acl
@@ -1085,7 +1086,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Libcap
@@ -1112,7 +1113,7 @@ make prefix=/uny/pkg/"$pkgname"/"$pkgver" lib=lib install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Libxcrypt
@@ -1142,7 +1143,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Shadow
@@ -1195,7 +1196,7 @@ sed -i '/SHELL/s/\/bin\/bash/\/usr\/bin\/env bash/' /etc/default/useradd
 ### End of individual build script
 
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### GCC
@@ -1257,7 +1258,7 @@ cp -av /uny/pkg/"$pkgname"/"$pkgver"/lib/libstdc++.so* /uny/pkg/glibc/*/lib/
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Link time library setup
@@ -1297,7 +1298,7 @@ ln -sv pkgconf.1 /uny/pkg/"$pkgname"/"$pkgver"/share/man/man1/pkg-config.1
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Sed
@@ -1328,7 +1329,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Bison
@@ -1354,7 +1355,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Grep
@@ -1382,7 +1383,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Bash
@@ -1430,7 +1431,7 @@ ln -sfv bash /bin/sh
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 EOFUNY3
 
 ######################################################################################################################
@@ -1507,7 +1508,7 @@ rm -fv /uny/pkg/"$pkgname"/"$pkgver"/lib/libltdl.a
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Expat
@@ -1533,7 +1534,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Less
@@ -1559,7 +1560,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Perl
@@ -1603,7 +1604,7 @@ unset BUILD_ZLIB BUILD_BZIP2
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Autoconf
@@ -1629,7 +1630,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Automake
@@ -1655,7 +1656,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Coreutils
@@ -1699,7 +1700,7 @@ sed -i 's/"1"/"8"/' /uny/pkg/"$pkgname"/"$pkgver"/share/man/man8/chroot.8
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Diffutils
@@ -1725,7 +1726,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Gawk
@@ -1757,7 +1758,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Findutils
@@ -1787,7 +1788,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Gzip
@@ -1813,7 +1814,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Make
@@ -1842,7 +1843,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Patch
@@ -1868,7 +1869,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Tar
@@ -1895,7 +1896,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Texinfo
@@ -1920,7 +1921,7 @@ make TEXMF=/uny/pkg/"$pkgname"/"$pkgver"/share/texmf install-tex
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Util-Linux
@@ -1966,7 +1967,7 @@ make install
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### Python
@@ -2000,7 +2001,7 @@ EOF
 
 add_to_paths_files
 dependencies_file_and_unset_vars
-verbose_off_timing_end
+cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ######################################################################################################################
