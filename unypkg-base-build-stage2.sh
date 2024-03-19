@@ -21,6 +21,8 @@ Stage 2 - Building the final system in the /uny chroot
 
 EOF
 
+set -xv
+
 if [[ $EUID -gt 0 ]]; then
     echo "Not root, exiting..."
     exit
@@ -52,11 +54,7 @@ EOF
 # shellcheck source=/dev/null
 source /root/.bash_profile
 
-### Setup Git and GitHub
-# Setup Git User -
-source "$UNY"/uny/build/github_conf
-
-tee >"$UNY"/uny/build/fs_size_function <<'EOF'
+tee >/root/fs_size_function <<'EOF'
 function fs_size {
     # Filesystem space
     df -h
@@ -66,9 +64,8 @@ function fs_size {
     du -hsx $UNY/sources
 }
 EOF
-source "$UNY"/uny/build/fs_size_function
+source /root/fs_size_function
 
-set -xv
 fs_size
 
 # Cleaning GitHub runner
@@ -97,6 +94,12 @@ wget "$stage1_download_url"
 tar xf "$stage1_filename"
 rm "$stage1_filename"
 fs_size
+
+### Setup Git and GitHub
+# Setup Git User -
+source "$UNY"/uny/build/github_conf
+
+cp /root/fs_size_function /uny/uny/build/fs_size_function
 
 ######################################################################################################################
 ######################################################################################################################
