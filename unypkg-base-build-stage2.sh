@@ -56,7 +56,7 @@ source /root/.bash_profile
 # Setup Git User -
 source "$UNY"/uny/build/github_conf
 
-tee "$UNY"/uny/build/fs_size_function <<'EOF'
+tee >"$UNY"/uny/build/fs_size_function <<'EOF'
 function fs_size {
     # Filesystem space
     df -h
