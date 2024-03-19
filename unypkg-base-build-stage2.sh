@@ -58,6 +58,10 @@ source "$UNY"/uny/build/github_conf
 
 set -xv
 
+# Cleaning GitHub runner
+rm -rf /usr/local/lib/android
+rm -rf /usr/share/dotnet
+
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
 ######################################################################################################################
