@@ -56,11 +56,25 @@ source /root/.bash_profile
 # Setup Git User -
 source "$UNY"/uny/build/github_conf
 
+tee "$UNY"/uny/build/fs_size_function <<'EOF'
+function fs_size {
+    # Filesystem space
+    df -h
+    # Complete root folders and complete size
+    du -hsx --exclude=/{proc,sys,dev,run} /*
+    du -hsx --exclude=/{proc,sys,dev,run} /{,*}
+    du -hsx $UNY/sources
+}
+EOF
+source "$UNY"/uny/build/fs_size_function
+
 set -xv
+fs_size
 
 # Cleaning GitHub runner
 rm -rf /usr/local/lib/android
 rm -rf /usr/share/dotnet
+fs_size
 
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
@@ -77,9 +91,11 @@ uny_build_date_now="$(echo "$stage1_release_url" | sed -e "s|.*/\([^/]*$\)|\1|" 
 mkdir -v $UNY
 cd $UNY || exit
 
+fs_size
 wget "$stage1_download_url"
 tar xf "$stage1_filename"
 rm "$stage1_filename"
+fs_size
 
 ######################################################################################################################
 ######################################################################################################################
@@ -191,6 +207,7 @@ function version_verbose_log_clean_unpack_cd {
     shopt -s nocaseglob
     pkgver="$(echo /sources/$pkgname*.tar* | sed "s/$pkgname//" | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p')"
     [[ ! -d /uny/build/logs ]] && mkdir /uny/build/logs
+    fs_size
     LOG_FILE=/uny/build/logs/"$pkgname-$pkgver"-unypkg-build-$(date -u +"%Y-%m-%dT%H.%M.%SZ").log
     exec 3>&1 4>&2
     trap 'exec 2>&4 1>&3' 0 1 2 3 15
@@ -253,6 +270,7 @@ function cleanup_verbose_off_timing_end {
     shopt -u nocaseglob
     duration=$SECONDS
     echo "$((duration / 60)) minutes and $((duration % 60)) seconds elapsed."
+    fs_size
     set +vx
     exec 2>&4 1>&3
 }
@@ -260,6 +278,8 @@ EOF
 
 # shellcheck source=/dev/null
 source /uny/build/functions
+
+source /uny/build/fs_size_function
 
 ######################################################################################################################
 ### Glibc
