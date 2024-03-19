@@ -74,6 +74,7 @@ fs_size
 # Cleaning GitHub runner
 rm -rf /usr/local/lib/android
 rm -rf /usr/share/dotnet
+rm -rf /var/lib/docker
 fs_size
 
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
