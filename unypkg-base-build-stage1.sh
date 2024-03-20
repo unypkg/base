@@ -59,13 +59,15 @@ chmod -v a+wt "$UNY"/sources
 mkdir -pv "$UNY"/{etc,var} "$UNY"/usr/{bin,lib,sbin}
 mkdir -pv "$UNY"/uny/build/logs
 
-### Setup Git and GitHub in GitHub Actions
-cat >"$UNY"/uny/build/github_conf <<"GITEOF"
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
 export UNY_AUTO_PAT
 GH_TOKEN="$(cat GH_TOKEN)"
 export GH_TOKEN
+
+### Setup Git and GitHub in GitHub Actions
+cat >"$UNY"/uny/build/github_conf <<"GITEOF"
+#!/usr/bin/env bash
 
 git config --global user.name "uny-auto"
 git config --global user.email "uny-auto@unyqly.com"
