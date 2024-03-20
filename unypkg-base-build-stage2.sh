@@ -21,8 +21,6 @@ Stage 2 - Building the final system in the /uny chroot
 
 EOF
 
-set -xv
-
 if [[ $EUID -gt 0 ]]; then
     echo "Not root, exiting..."
     exit
@@ -36,6 +34,8 @@ export UNY_AUTO_PAT
 # shellcheck disable=SC2034
 GH_TOKEN="$(cat GH_TOKEN)"
 export GH_TOKEN
+
+set -xv
 
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
@@ -80,7 +80,7 @@ tar xf "$stage1_filename"
 rm "$stage1_filename"
 
 ### Setup Git and GitHub
-# Setup Git User -
+# Setup Git User
 source "$UNY"/uny/build/github_conf
 
 ######################################################################################################################
