@@ -178,14 +178,16 @@ function add_to_paths_files {
 }
 
 function remove_from_paths_files {
-    for usrpath in /uny/pkg/"$pkgname"/"$pkgver"/*; do
-        pathtype=$(basename "$usrpath")
-        if grep -q "/$pkgname/[^/:]*" /uny/paths/"$pathtype"; then
-            sed -z -e "s|:.[^:]*$pkgname/[^:]*||" -e "s/\n//g" -i /uny/paths/"$pathtype"
-        fi
-    done
-    # shellcheck source=/dev/null
-    source /uny/paths/pathenv
+    if [[ -d /uny/pkg/$pkgname/$pkgver ]]; then
+        for usrpath in /uny/pkg/"$pkgname"/"$pkgver"/*; do
+            pathtype=$(basename "$usrpath")
+            if grep -q "/$pkgname/[^/:]*" /uny/paths/"$pathtype"; then
+                sed -z -e "s|:.[^:]*$pkgname/[^:]*||" -e "s/\n//g" -i /uny/paths/"$pathtype"
+            fi
+        done
+        # shellcheck source=/dev/null
+        source /uny/paths/pathenv
+    fi
 }
 
 function version_verbose_log_clean_unpack_cd {
@@ -1134,7 +1136,7 @@ get_include_paths_temp
 
 unset LD_RUN_PATH
 
-./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver"\
+./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
     --enable-hashes=strong,glibc \
     --enable-obsolete-api=no \
     --disable-static \
@@ -1296,7 +1298,7 @@ unset LD_RUN_PATH
 make -j"$(nproc)"
 make install
 
-ln -sv pkgconf   /uny/pkg/"$pkgname"/"$pkgver"/bin/pkg-config
+ln -sv pkgconf /uny/pkg/"$pkgname"/"$pkgver"/bin/pkg-config
 ln -sv pkgconf.1 /uny/pkg/"$pkgname"/"$pkgver"/share/man/man1/pkg-config.1
 
 ####################################################
@@ -1430,7 +1432,7 @@ tee /bin/bash <<'EOF'
 exec bash "$@"
 EOF
 chmod +x /bin/bash
-ln -sfv bash /bin/sh 
+ln -sfv bash /bin/sh
 
 ####################################################
 ### End of individual build script
