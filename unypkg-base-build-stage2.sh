@@ -1977,39 +1977,39 @@ add_to_paths_files
 dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
 
-######################################################################################################################
-### Python
-pkgname="python"
-rm "$(echo /sources/$pkgname*html.tar*)"
-
-version_verbose_log_clean_unpack_cd
-get_env_var_values
-get_include_paths
-
-####################################################
-### Start of individual build script
-
-./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
-    --enable-shared \
-    --with-system-expat \
-    --enable-optimizations
-
-make -j"$(nproc)"
-#make -j"$(nproc)" test
-make install
-
-cat >/etc/pip.conf <<EOF
-[global]
-root-user-action = ignore
-disable-pip-version-check = true
-EOF
-
-####################################################
-### End of individual build script
-
-add_to_paths_files
-dependencies_file_and_unset_vars
-cleanup_verbose_off_timing_end
+#######################################################################################################################
+#### Python
+#pkgname="python"
+#rm "$(echo /sources/$pkgname*html.tar*)"
+#
+#version_verbose_log_clean_unpack_cd
+#get_env_var_values
+#get_include_paths
+#
+#####################################################
+#### Start of individual build script
+#
+#./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+#    --enable-shared \
+#    --with-system-expat \
+#    --enable-optimizations
+#
+#make -j"$(nproc)"
+##make -j"$(nproc)" test
+#make install
+#
+#cat >/etc/pip.conf <<EOF
+#[global]
+#root-user-action = ignore
+#disable-pip-version-check = true
+#EOF
+#
+#####################################################
+#### End of individual build script
+#
+#add_to_paths_files
+#dependencies_file_and_unset_vars
+#cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ######################################################################################################################
