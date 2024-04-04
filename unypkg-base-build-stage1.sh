@@ -154,7 +154,7 @@ function git_clone_source_repo {
     git clone $gitdepth --single-branch -b "$pkg_head" "$pkg_git_repo"
 }
 
-function version_details {
+function check_if_newer_version {
     # Download last vdet file
     curl -LO https://github.com/unypkg/"$pkgname"/releases/latest/download/vdet
     old_commit_id="$(sed '2q;d' vdet)"
@@ -162,15 +162,20 @@ function version_details {
     [[ $latest_commit_id == "" ]] && latest_commit_id="$latest_ver"
 
     # pkg will be built, if commit id is different and newer.
-    # Before a pkg is built the existence of a vdet-"$pkgname"-new file is checked
+    # Before a pkg is built the existence of a build-"$pkgname" file is checked
     if [[ "$latest_commit_id" != "$old_commit_id" && "$uny_build_date_seconds_now" -gt "$uny_build_date_seconds_old" ]]; then
-        {
-            echo "$latest_ver"
-            echo "$latest_commit_id"
-            echo "$uny_build_date_now"
-            echo "$uny_build_date_seconds_now"
-        } >vdet-"$pkgname"-new
+        echo "newer" >release-"$pkgname"
     fi
+}
+
+function version_details {
+    {
+        echo "$latest_ver"
+        echo "$latest_commit_id"
+        echo "$uny_build_date_now"
+        echo "$uny_build_date_seconds_now"
+    } >vdet-"$pkgname"
+    check_if_newer_version
 }
 
 function archiving_source {

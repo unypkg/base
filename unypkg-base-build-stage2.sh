@@ -2083,10 +2083,10 @@ gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
 ### Packaging individual ones
 
 cd $UNY/pkg || exit
-for pkg in /var/uny/sources/vdet-*-new; do
-    vdet_content="$(cat "$pkg")"
-    vdet_new_file="$pkg"
-    pkg="$(echo "$pkg" | grep -Eo "vdet.*new$" | sed -e "s|vdet-||" -e "s|-new||")"
+for pkg in /var/uny/sources/release-*; do
+    vdet_content="$(basename "$pkg" | sed "s|release-|vdet-|" | xargs cat)"
+    vdet_new_file="${pkg//release-/vdet-}"
+    pkg="$(echo "$pkg" | grep -Eo "release.*" | sed -e "s|release-||")"
     pkgv="$(echo "$vdet_content" | head -n 1)"
 
     cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
@@ -2098,5 +2098,5 @@ for pkg in /var/uny/sources/vdet-*-new; do
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
     # To-do: Also upload source with next command
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+        "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
 done
