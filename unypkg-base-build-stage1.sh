@@ -30,6 +30,12 @@ apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libn
     python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
     patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
 
+### Getting Variables from files
+UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+export UNY_AUTO_PAT
+GH_TOKEN="$(cat GH_TOKEN)"
+export GH_TOKEN
+
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
 
@@ -58,12 +64,6 @@ chmod -v a+wt "$UNY"/sources
 
 mkdir -pv "$UNY"/{etc,var} "$UNY"/usr/{bin,lib,sbin}
 mkdir -pv "$UNY"/uny/build/logs
-
-### Getting Variables from files
-UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
-export UNY_AUTO_PAT
-GH_TOKEN="$(cat GH_TOKEN)"
-export GH_TOKEN
 
 ### Setup Git and GitHub in GitHub Actions
 cat >"$UNY"/uny/build/github_conf <<"GITEOF"
