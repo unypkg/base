@@ -523,7 +523,7 @@ version_details
 ######################################################################################################################
 ### Xz
 pkgname="xz"
-pkggit="https://github.com/tukaani-project/xz.git refs/tags/v[0-9.]*"
+pkggit="https://git.tukaani.org/xz.git refs/tags/v5.2.7"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
