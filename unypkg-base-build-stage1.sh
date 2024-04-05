@@ -27,7 +27,7 @@ if [[ $EUID -gt 0 ]]; then
 fi
 
 apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev \
-    python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip \
+    python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip zstd \
     patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
 
 ### Getting Variables from files

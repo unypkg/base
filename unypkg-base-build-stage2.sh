@@ -2084,8 +2084,9 @@ gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
 
 cd $UNY/pkg || exit
 for pkg in /var/uny/sources/release-*; do
-    vdet_content="$(basename "$pkg" | sed "s|release-|vdet-|" | xargs cat)"
     vdet_new_file="${pkg//release-/vdet-}"
+    vdet_content="$(cat "$vdet_new_file")"
+
     pkg="$(echo "$pkg" | grep -Eo "release.*" | sed -e "s|release-||")"
     pkgv="$(echo "$vdet_content" | head -n 1)"
 
@@ -2093,8 +2094,10 @@ for pkg in /var/uny/sources/release-*; do
 
     source_archive_orig="$(echo /var/uny/sources/"$pkg"-"$pkgv".tar.*)"
     source_archive_new="$(echo "$source_archive_orig" | sed -r -e "s|^.*/||" -e "s|(\.tar.*$)|-source\1|")"
+
     cp -a "$source_archive_orig" "$source_archive_new"
     cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
+
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
     # To-do: Also upload source with next command
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
