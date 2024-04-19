@@ -233,7 +233,7 @@ function get_include_paths_temp {
 function get_include_paths {
     C_INCLUDE_PATH="$(cat /uny/paths/include)"
     export C_INCLUDE_PATH
-    CPLUS_INCLUDE_PATH="$(cat /uny/paths/include)"
+    CPLUS_INCLUDE_PATH="$(cat /uny/paths/include-cplus):$(cat /uny/paths/include)"
     export CPLUS_INCLUDE_PATH
 }
 
@@ -1260,6 +1260,8 @@ ln -sfv /uny/pkg/"$pkgname"/"$pkgver"/libexec/gcc/"$(gcc -dumpmachine)"/"$pkgver
 
 cp -av /uny/pkg/"$pkgname"/"$pkgver"/lib/libstdc++.so* /uny/pkg/glibc/*/lib/
 #cp -av /usr/lib/libgcc_s.so* /uny/pkg/glibc/*/lib/
+
+echo -n "/uny/pkg/$pkgname/$pkgver/include:/uny/pkg/$pkgname/$pkgver/include/c++/$pkgver" >/uny/paths/include-cplus
 
 ####################################################
 ### End of individual build script
