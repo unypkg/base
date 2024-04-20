@@ -635,27 +635,6 @@ wget https://ftp.gnu.org/gnu/texinfo/texinfo-"$latest_ver".tar.xz
 version_details
 
 ######################################################################################################################
-### Util-Linux
-pkgname="util-linux"
-pkggit="https://github.com/util-linux/util-linux.git refs/tags/v[0-9.]*"
-gitdepth="--depth=1"
-
-### Get version info from git remote
-# shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9]([.0-9]+)+$" | tail -n 1)"
-latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed "s|v||")"
-latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
-
-# shellcheck disable=SC2001
-latest_ver_front="$(echo "$latest_ver" | sed "s|[.][0-9]*$||")"
-
-check_for_repo_and_create
-
-wget https://www.kernel.org/pub/linux/utils/util-linux/v"$latest_ver_front"/util-linux-"$latest_ver".tar.xz
-
-version_details
-
-######################################################################################################################
 ### zLib
 pkgname="zlib"
 pkggit="https://github.com/madler/zlib.git refs/tags/v[0-9.]*"
