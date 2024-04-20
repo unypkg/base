@@ -1661,6 +1661,15 @@ make -j"$(nproc)"
 make -j$(($(nproc)>4?$(nproc):4)) check
 make install
 
+# Link libtool m4 files
+automake_aclocal_dir=(/uny/pkg/automake/*/share/aclocal/)
+libtool_dir=(/uny/pkg/libtool/*/share/aclocal/)
+
+cd "${automake_aclocal_dir[0]}" || exit
+for file in "${libtool_dir[0]}"*; do
+    ln -svf  "$file" "$(basename $file)"
+done
+
 ####################################################
 ### End of individual build script
 
