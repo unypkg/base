@@ -1212,7 +1212,7 @@ pkgname="gcc"
 
 version_verbose_log_clean_unpack_cd
 get_env_var_values
-get_include_paths
+get_include_paths_temp
 
 ####################################################
 ### Start of individual build script
