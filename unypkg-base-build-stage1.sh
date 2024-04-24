@@ -1883,34 +1883,6 @@ make install
 cleanup
 
 ######################################################################################################################
-### Util-Linux
-
-pkgname="util-linux"
-
-unpack_cd
-
-mkdir -pv /var/lib/hwclock
-
-./configure ADJTIME_PATH=/var/lib/hwclock/adjtime \
-    --libdir=/usr/lib \
-    --docdir=/usr/share/doc/util-linux \
-    --disable-chfn-chsh \
-    --disable-login \
-    --disable-nologin \
-    --disable-su \
-    --disable-setpriv \
-    --disable-runuser \
-    --disable-pylibmount \
-    --disable-static \
-    --without-python \
-    runstatedir=/run
-
-make -j"$(nproc)"
-make install
-
-cleanup
-
-######################################################################################################################
 ######################################################################################################################
 ### Cleaning
 
