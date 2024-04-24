@@ -541,7 +541,7 @@ check_for_repo_and_create
 git_clone_source_repo
 
 cd "$pkg_git_repo_dir" || exit
-autoreconf -i
+./autogen.sh
 cd /uny/sources || exit
 
 version_details
