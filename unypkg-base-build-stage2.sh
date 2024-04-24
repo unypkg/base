@@ -2025,7 +2025,12 @@ for pkg in /var/uny/sources/release-*; do
     cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
 
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
-    # To-do: Also upload source with next command
-    gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-        "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+
+    if [[ -f "$pkg"/"$pkgv"/rdep ]]; then
+        gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+            "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+    else
+        gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+            "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+    fi
 done
