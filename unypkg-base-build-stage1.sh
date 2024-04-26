@@ -26,15 +26,27 @@ if [[ $EUID -gt 0 ]]; then
     exit
 fi
 
-apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev \
-    python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip zstd \
-    patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
-
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
 export UNY_AUTO_PAT
 GH_TOKEN="$(cat GH_TOKEN)"
 export GH_TOKEN
+
+apt update && apt install -y gcc g++ gperf bison flex texinfo help2man make libncurses5-dev \
+    python3-dev autoconf automake libtool libtool-bin gawk curl bzip2 xz-utils unzip zstd \
+    patch libstdc++6 rsync gh git meson ninja-build gettext autopoint libsigsegv-dev pkgconf
+
+######################################################################################################################
+######################################################################################################################
+### Installing the unypkg script
+wget -qO- uny.nu/pkg | bash
+### unypkg functions
+source /uny/git/unypkg/fn
+
+uny_build_date
+uny_auto_github_conf
+
+set -xv
 
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
@@ -64,26 +76,6 @@ chmod -v a+wt "$UNY"/sources
 
 mkdir -pv "$UNY"/{etc,var} "$UNY"/usr/{bin,lib,sbin}
 mkdir -pv "$UNY"/uny/build/logs
-
-### Setup Git and GitHub in GitHub Actions
-cat >"$UNY"/uny/build/github_conf <<"GITEOF"
-#!/usr/bin/env bash
-
-git config --global user.name "uny-auto"
-git config --global user.email "uny-auto@unyqly.com"
-git config --global credential.helper store
-git config --global advice.detachedHead false
-
-git credential approve <<EOF
-protocol=https
-url=https://github.com
-username=uny-auto
-password="$UNY_AUTO_PAT"
-EOF
-GITEOF
-source "$UNY"/uny/build/github_conf
-
-set -xv
 
 for i in bin lib sbin; do
     ln -sv usr/$i "$UNY"/$i
@@ -121,79 +113,6 @@ Downloading sources
 EOF
 
 cd "$UNY"/sources || exit
-
-# new vdet date information
-uny_build_date_seconds_now="$(date +%s)"
-uny_build_date_now="$(date -d @"$uny_build_date_seconds_now" +"%Y-%m-%dT%H.%M.%SZ")"
-
-######################################################################################################################
-######################################################################################################################
-### functions
-
-cat >"$UNY"/uny/build/download_functions <<"EOF"
-function check_for_repo_and_create {
-    # Create repo if it doesn't exist
-    if [[ $(curl -s -o /dev/null -w "%{http_code}" https://github.com/unypkg/"$pkgname") != "200" ]]; then
-        gh repo create unypkg/"$pkgname" --public
-        [[ ! -d unygit ]] && mkdir -v unygit
-        git -C unygit clone https://github.com/unypkg/"$pkgname".git
-        touch unygit/"$pkgname"/emptyfile
-        git -C unygit/"$pkgname" add .
-        git -C unygit/"$pkgname" commit -m "Make repo non-empty"
-        git -C unygit/"$pkgname" push origin
-    fi
-}
-
-function git_clone_source_repo {
-    # shellcheck disable=SC2001
-    pkg_head="$(echo "$latest_head" | sed "s|.*refs/[^/]*/||")"
-    pkg_git_repo="$(echo "$pkggit" | cut --fields=1 --delimiter=" ")"
-    pkg_git_repo_dir="$(basename "$pkg_git_repo" | cut -d. -f1)"
-    [[ -d "$pkg_git_repo_dir" ]] && rm -rf "$pkg_git_repo_dir"
-    # shellcheck disable=SC2086
-    git clone $gitdepth --single-branch -b "$pkg_head" "$pkg_git_repo"
-}
-
-function check_if_newer_version {
-    # Download last vdet file
-    curl -LO https://github.com/unypkg/"$pkgname"/releases/latest/download/vdet
-    old_commit_id="$(sed '2q;d' vdet)"
-    uny_build_date_seconds_old="$(sed '4q;d' vdet)"
-    [[ $latest_commit_id == "" ]] && latest_commit_id="$latest_ver"
-
-    # pkg will be built, if commit id is different and newer.
-    # Before a pkg is built the existence of a build-"$pkgname" file is checked
-    if [[ "$latest_commit_id" != "$old_commit_id" && "$uny_build_date_seconds_now" -gt "$uny_build_date_seconds_old" ]]; then
-        echo "newer" >release-"$pkgname"
-    fi
-}
-
-function version_details {
-    {
-        echo "$latest_ver"
-        echo "$latest_commit_id"
-        echo "$uny_build_date_now"
-        echo "$uny_build_date_seconds_now"
-    } >vdet-"$pkgname"
-    check_if_newer_version
-}
-
-function archiving_source {
-    rm -rf "$pkg_git_repo_dir"/.git "$pkg_git_repo_dir"/.git*
-    [[ -d "$pkgname-$latest_ver" ]] && rm -rf "$pkgname-$latest_ver"
-    mv -v "$pkg_git_repo_dir" "$pkgname-$latest_ver"
-    XZ_OPT="--threads=0" tar -cJpf "$pkgname-$latest_ver".tar.xz "$pkgname-$latest_ver"
-}
-
-function repo_clone_version_archive {
-    check_for_repo_and_create
-    git_clone_source_repo
-    version_details
-    archiving_source
-}
-EOF
-
-source "$UNY"/uny/build/download_functions
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1067,18 +986,7 @@ set -vx
 ######################################################################################################################
 ### Functions
 
-cat >/uny/uny/build/stage_functions <<"EOF"
-function unpack_cd {
-    cd "$UNY"/sources/ || exit
-    [[ ! -d $(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u) ]] && tar xf "$pkgname"*.tar.*
-    cd "$(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u)" || exit
-}
-
-function cleanup {
-    cd "$UNY"/sources/ || exit
-    rm -rf "$(echo $pkgname* | grep -Eo "$pkgname-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u)"
-}
-EOF
+source /uny/git/unypkg/fn
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1099,7 +1007,7 @@ PATH=$UNY/tools/bin:$PATH
 CONFIG_SITE=$UNY/usr/share/config.site
 export UNY LC_ALL UNY_TGT PATH CONFIG_SITE
 MAKEFLAGS="-j$(nproc)"
-source "$UNY"/uny/build/stage_functions
+source /uny/git/unypkg/fn
 EOF
 EOFUNY
 
@@ -1797,7 +1705,7 @@ chmod -v 600 /var/log/btmp
 ### Functions
 
 # shellcheck source=/dev/null
-source /uny/build/stage_functions
+source /uny/git/unypkg/fn
 
 ######################################################################################################################
 ### Gettext
@@ -1906,6 +1814,7 @@ umount $UNY/dev/pts
 umount $UNY/{sys,proc,run,dev}
 
 cd $UNY || exit
+# shellcheck disable=SC2154
 XZ_OPT="-0 --threads=0" tar -cJpf /home/stage1-"$uny_build_date_now".tar.xz .
 gh -R unypkg/stage1 release create stage1-"$uny_build_date_now" --generate-notes \
     /home/stage1-"$uny_build_date_now".tar.xz

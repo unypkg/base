@@ -35,6 +35,15 @@ export UNY_AUTO_PAT
 GH_TOKEN="$(cat GH_TOKEN)"
 export GH_TOKEN
 
+######################################################################################################################
+######################################################################################################################
+### Installing the unypkg script
+wget -qO- uny.nu/pkg | bash
+### unypkg functions
+source /uny/git/unypkg/fn
+
+uny_auto_github_conf
+
 set -xv
 
 ### Setup the Shell
@@ -78,10 +87,6 @@ cd $UNY || exit
 wget "$stage1_download_url"
 tar xf "$stage1_filename"
 rm "$stage1_filename"
-
-### Setup Git and GitHub
-# Setup Git User
-source "$UNY"/uny/build/github_conf
 
 ######################################################################################################################
 ######################################################################################################################
@@ -127,18 +132,7 @@ set -vx
 ######################################################################################################################
 ## Uny setup
 
-### Directories and Symlinks
-mkdir -v /uny /pkg
-ln -sv /pkg /uny/pkg # ln [OPTION]... TARGET... DIRECTORY
-mkdir -v /etc/uny
-mkdir -v /uny/paths
 [[ -f /uny/paths/bin ]] && rm -rf /uny/paths/*
-
-# Set PATH and functions on login
-tee /uny/root/.profile <<'EOF'
-source /uny/paths/pathenv
-source /uny/build/functions
-EOF
 
 ### Temporary standard headers
 # Get paths from: echo | gcc -Wp,-v -x c++ - -fsyntax-only
@@ -159,111 +153,8 @@ echo -n "/uny/include${cplus_include_base[*]}:/uny/include${cplus_include_base[*
 ######################################################################################################################
 ### Building packages
 
-tee /uny/build/functions <<'EOF'
-#!/usr/bin/env bash
-
-function add_to_paths_files {
-    for usrpath in /uny/pkg/"$pkgname"/"$pkgver"/*; do
-        pathtype=$(basename "$usrpath")
-        [[ ! -f /uny/paths/$pathtype ]] && touch /uny/paths/"$pathtype"
-        if grep -q "/$pkgname/[^/:]*" /uny/paths/"$pathtype"; then
-            sed "s+/$pkgname/[^/:]*+/$pkgname/$pkgver+" -i /uny/paths/"$pathtype"
-        else
-            [[ ! $pkgname == "glibc" ]] && delim=":" || delim=""
-            echo -n "$delim/uny/pkg/$pkgname/$pkgver/$pathtype" >>/uny/paths/"$pathtype"
-        fi
-    done
-    # shellcheck source=/dev/null
-    source /uny/paths/pathenv
-}
-
-function remove_from_paths_files {
-    if [[ -d /uny/pkg/$pkgname/$pkgver ]]; then
-        for usrpath in /uny/pkg/"$pkgname"/"$pkgver"/*; do
-            pathtype=$(basename "$usrpath")
-            if grep -q "/$pkgname/[^/:]*" /uny/paths/"$pathtype"; then
-                sed -z -e "s|:.[^:]*$pkgname/[^:]*||" -e "s/\n//g" -i /uny/paths/"$pathtype"
-            fi
-        done
-        # shellcheck source=/dev/null
-        source /uny/paths/pathenv
-    fi
-}
-
-function version_verbose_log_clean_unpack_cd {
-    SECONDS=0
-    shopt -s nocaseglob
-    pkgver="$(echo /sources/$pkgname*.tar* | sed "s/$pkgname//" | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p')"
-    [[ ! -d /uny/build/logs ]] && mkdir /uny/build/logs
-    LOG_FILE=/uny/build/logs/"$pkgname-$pkgver"-unypkg-build-$(date -u +"%Y-%m-%dT%H.%M.%SZ").log
-    exec 3>&1 4>&2
-    trap 'exec 2>&4 1>&3' 0 1 2 3 15
-    exec > >(tee "$LOG_FILE") 2>&1
-    set -vx
-    # shellcheck disable=SC2269
-    pkgname="$pkgname"
-    # shellcheck disable=SC2269
-    pkgver="$pkgver"
-
-    remove_from_paths_files
-    rm -rf /uny/pkg/"$pkgname"/"$pkgver"
-    rm -rf /sources/"$pkgname"*"$pkgver"
-    cd /sources || exit
-    tar xf "$pkgname"*.tar.*
-    cd "$(echo $pkgname* | grep -Eio "$pkgname.[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u)" || exit
-}
-
-function get_env_var_values {
-    libpath="$(cat /uny/paths/lib):/uny/pkg/$pkgname/$pkgver/lib"
-    LIBRARY_PATH="$libpath" # Used during linking
-    export LIBRARY_PATH
-    ldflags="-Wl,-rpath=$libpath -Wl,--dynamic-linker=$(grep -o "^.*glibc/[^:]*" /uny/paths/lib)/ld-linux-x86-64.so.2" # Used at runtime
-    export LDFLAGS="$ldflags"
-    LD_RUN_PATH=$libpath # Used at runtime
-    export LD_RUN_PATH
-}
-
-function get_include_paths_temp {
-    C_INCLUDE_PATH="$(cat /uny/paths/include-c-base):$(cat /uny/paths/include)"
-    export C_INCLUDE_PATH
-    CPLUS_INCLUDE_PATH="$(cat /uny/paths/include-cplus-base):$(cat /uny/paths/include)"
-    export CPLUS_INCLUDE_PATH
-}
-
-function get_include_paths {
-    C_INCLUDE_PATH="$(cat /uny/paths/include)"
-    export C_INCLUDE_PATH
-    CPLUS_INCLUDE_PATH="$(cat /uny/paths/include-cplus):$(cat /uny/paths/include)"
-    export CPLUS_INCLUDE_PATH
-}
-
-function dependencies_file_and_unset_vars {
-    for o in /uny/pkg/"$pkgname"/"$pkgver"/{lib,bin,sbin}/*; do
-        if [[ ! -L $o && -f $o ]]; then
-            echo "Shared objects required by: $o"
-            ldd "$o"
-            ldd "$o" | grep -v "$pkgname/$pkgver" | sed "s|^.*ld-linux.*||" | grep -o "uny/pkg\(.*\)" | sed -e "s+uny/pkg/+unypkg/+" | grep -Eo "(unypkg/[a-z0-9]+/[0-9.]*)" | sort -u >>/uny/pkg/"$pkgname"/"$pkgver"/rdep
-        fi
-    done
-    sort -u /uny/pkg/"$pkgname"/"$pkgver"/rdep -o /uny/pkg/"$pkgname"/"$pkgver"/rdep
-    echo "Packages required by unypkg/$pkgname/$pkgver:"
-    cat /uny/pkg/"$pkgname"/"$pkgver"/rdep
-
-    unset CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH LIBRARY_PATH LD_RUN_PATH LDFLAGS CFLAGS
-}
-
-function cleanup_verbose_off_timing_end {
-    rm -rf /sources/"$pkgname"*"$pkgver"
-    shopt -u nocaseglob
-    duration=$SECONDS
-    echo "$((duration / 60)) minutes and $((duration % 60)) seconds elapsed."
-    set +vx
-    exec 2>&4 1>&3
-}
-EOF
-
 # shellcheck source=/dev/null
-source /uny/build/functions
+source /uny/git/unypkg/fn
 
 ######################################################################################################################
 ### Glibc
@@ -305,10 +196,6 @@ cp -av /usr/lib/libgcc_s.so* /uny/pkg/"$pkgname"/"$pkgver"/lib/
 #sed "/RTLDLIST=/s@/usr@/uny/pkg/$pkgname/$pkgver@g" -i /uny/pkg/"$pkgname"/"$pkgver"/bin/ldd
 sed '/RTLDLIST=/s@/lib64@/lib@g' -i /uny/pkg/"$pkgname"/"$pkgver"/bin/ldd
 
-tee /uny/paths/pathenv <<'EOF'
-PATH="$(cat /uny/paths/bin):$(cat /uny/paths/sbin):/usr/bin:/usr/sbin"
-export PATH
-EOF
 add_to_paths_files
 
 # ldconfig for dynamic runtime linker ld-linux.so
@@ -327,13 +214,7 @@ mkdir -pv /var/cache/nscd
 
 mkdir -pv /uny/pkg/"$pkgname"/"$pkgver"/lib/locale
 
-tee -a /uny/paths/pathenv <<EOF
-LOCPATH="/uny/pkg/$pkgname/$pkgver/lib/locale"
-export LOCPATH
-I18NPATH="/uny/pkg/$pkgname/$pkgver/share/i18n"
-export I18NPATH
-EOF
-source /uny/paths/pathenv
+uny_env_paths
 
 localedef -i POSIX -f UTF-8 C.UTF-8 2>/dev/null || true
 localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
@@ -1492,7 +1373,7 @@ chroot "$UNY" /usr/bin/env -i \
     bash -x <<'EOFUNY4'
 set -vx
 # shellcheck source=/dev/null
-source /uny/build/functions
+source /uny/git/unypkg/fn
 
 ######################################################################################################################
 ### Libtool
