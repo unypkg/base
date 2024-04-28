@@ -60,6 +60,7 @@ PS1='\u:\w\$ '
     #fi
 #fi
 EOF
+[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 # shellcheck source=/dev/null
 source /root/.bash_profile
 
@@ -68,8 +69,6 @@ rm -rf /usr/local/lib/android
 rm -rf /usr/share/dotnet
 rm -rf /var/lib/docker
 df -h
-
-[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
 ######################################################################################################################
 ######################################################################################################################
@@ -106,24 +105,7 @@ Building the base system in the chroot
 
 EOF
 
-mount -v --bind /dev $UNY/dev
-mount -v --bind /dev/pts $UNY/dev/pts
-mount -vt proc proc $UNY/proc
-mount -vt sysfs sysfs $UNY/sys
-mount -vt tmpfs tmpfs $UNY/run
-
-if [ -h $UNY/dev/shm ]; then
-    mkdir -pv $UNY/"$(readlink $UNY/dev/shm)"
-else
-    mount -t tmpfs -o nosuid,nodev tmpfs $UNY/dev/shm
-fi
-
-chroot "$UNY" /usr/bin/env -i \
-    HOME=/uny/root \
-    TERM="$TERM" \
-    PS1='uny | \u:\w\$ ' \
-    PATH=/usr/bin:/usr/sbin \
-    bash -x <<'EOFUNY3'
+unyc <<'EOFUNY3'
 set -vx
 ######################################################################################################################
 ######################################################################################################################
@@ -1343,34 +1325,7 @@ Building the rest with the new bash being used
 
 EOF
 
-mountpoint -q $UNY/dev/shm && umount $UNY/dev/shm
-umount $UNY/dev/pts
-umount $UNY/{sys,proc,run,dev}
-
-mount -v --bind /dev $UNY/dev
-mount -v --bind /dev/pts $UNY/dev/pts
-mount -vt proc proc $UNY/proc
-mount -vt sysfs sysfs $UNY/sys
-mount -vt tmpfs tmpfs $UNY/run
-
-if [ -h $UNY/dev/shm ]; then
-    mkdir -pv $UNY/"$(readlink $UNY/dev/shm)"
-else
-    mount -t tmpfs -o nosuid,nodev tmpfs $UNY/dev/shm
-fi
-
-######################################################################################################################
-######################################################################################################################
-### Link etc folder in and out of chroot
-ln -sv /uny/etc/uny /etc/uny
-
-UNY_PATH="$(cat /uny/uny/paths/bin):$(cat /uny/uny/paths/sbin):/usr/bin:/usr/sbin"
-chroot "$UNY" /usr/bin/env -i \
-    HOME=/uny/root \
-    TERM="$TERM" \
-    PS1='uny | \u:\w\$ ' \
-    PATH="$UNY_PATH" \
-    bash -x <<'EOFUNY4'
+unyc <<'EOFUNY4'
 set -vx
 # shellcheck source=/dev/null
 source /uny/git/unypkg/fn
@@ -1818,9 +1773,14 @@ add_to_paths_files
 dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
 
+set -vx
 ######################################################################################################################
 ######################################################################################################################
 ### System cleanup
+
+hash -r
+PATH="$(cat /uny/uny/paths/bin):$(cat /uny/uny/paths/sbin):/usr/bin:/usr/sbin"
+export PATH
 
 ### Testing if everything is found in /uny/pkg that is in /usr/bin
 echo "Testing if everything is found in /uny/pkg that is in /usr/bin"
@@ -1828,8 +1788,13 @@ for bin in {/bin/*,/sbin/*}; do
     type "$(basename "$bin")" | grep -v "/uny"
 done
 
+echo "Removing temporary build tools"
 # shellcheck disable=SC2114
 rm -rf /{bin,sbin,lib,lib64,usr,media,mnt,opt,srv,boot}
+EOFUNY4
+
+unyc <<"EOFUNY5"
+set -vx
 
 ### Setup skeleton again
 mkdir -pv /usr/bin
@@ -1841,16 +1806,10 @@ tee /bin/bash <<'EOF'
 exec bash "$@"
 EOF
 chmod +x /bin/bash
-ln -sfv bash /bin/sh 
-EOFUNY4
+ln -sfv bash /bin/sh
 
-######################################################################################################################
-######################################################################################################################
-### Exit chroot
 
-mountpoint -q $UNY/dev/shm && umount $UNY/dev/shm
-umount $UNY/dev/pts
-umount $UNY/{sys,proc,run,dev}
+EOFUNY5
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1889,29 +1848,31 @@ gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
 ######################################################################################################################
 ### Packaging individual ones
 
-cd $UNY/pkg || exit
-for pkg in /var/uny/sources/release-*; do
-    vdet_new_file="${pkg//release-/vdet-}"
-    vdet_content="$(cat "$vdet_new_file")"
+if compgen -G "/var/uny/sources/release-*"; then
+    cd $UNY/pkg || exit
+    for pkg in /var/uny/sources/release-*; do
+        vdet_new_file="${pkg//release-/vdet-}"
+        vdet_content="$(cat "$vdet_new_file")"
 
-    pkg="$(echo "$pkg" | grep -Eo "release.*" | sed -e "s|release-||")"
-    pkgv="$(echo "$vdet_content" | head -n 1)"
+        pkg="$(echo "$pkg" | grep -Eo "release.*" | sed -e "s|release-||")"
+        pkgv="$(echo "$vdet_content" | head -n 1)"
 
-    cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
+        cp "$vdet_new_file" "$pkg"/"$pkgv"/vdet
 
-    source_archive_orig="$(echo /var/uny/sources/"$pkg"-"$pkgv".tar.*)"
-    source_archive_new="$(echo "$source_archive_orig" | sed -r -e "s|^.*/||" -e "s|(\.tar.*$)|-source\1|")"
+        source_archive_orig="$(echo /var/uny/sources/"$pkg"-"$pkgv".tar.*)"
+        source_archive_new="$(echo "$source_archive_orig" | sed -r -e "s|^.*/||" -e "s|(\.tar.*$)|-source\1|")"
 
-    cp -a "$source_archive_orig" "$source_archive_new"
-    cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
+        cp -a "$source_archive_orig" "$source_archive_new"
+        cp -a /var/uny/build/logs/"$pkg"-*.log "$pkg"-build.log
 
-    XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
+        XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
 
-    if [[ -f "$pkg"/"$pkgv"/rdep ]]; then
-        gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-            "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
-    else
-        gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-            "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
-    fi
-done
+        if [[ -f "$pkg"/"$pkgv"/rdep ]]; then
+            gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+                "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+        else
+            gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
+                "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+        fi
+    done
+fi

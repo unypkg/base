@@ -62,6 +62,7 @@ PS1='\u:\w\$ '
     #fi
 #fi
 EOF
+[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 # shellcheck source=/dev/null
 source /root/.bash_profile
 
@@ -91,8 +92,6 @@ chown -R uny:uny "$UNY"/* #{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
 x86_64) chown -v uny "$UNY"/lib64 ;;
 esac
-
-[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1594,26 +1593,7 @@ esac
 ######################################################################################################################
 ### Enter Chroot
 
-mkdir -pv $UNY/{dev,proc,sys,run}
-
-mount -v --bind /dev $UNY/dev
-mount -v --bind /dev/pts $UNY/dev/pts
-mount -vt proc proc $UNY/proc
-mount -vt sysfs sysfs $UNY/sys
-mount -vt tmpfs tmpfs $UNY/run
-
-if [ -h $UNY/dev/shm ]; then
-    mkdir -pv $UNY/"$(readlink $UNY/dev/shm)"
-else
-    mount -t tmpfs -o nosuid,nodev tmpfs $UNY/dev/shm
-fi
-
-chroot "$UNY" /usr/bin/env -i \
-    HOME=/uny/root \
-    TERM="$TERM" \
-    PS1='uny auto | \u:\w\$ ' \
-    PATH=/usr/bin:/usr/sbin \
-    bash -x <<'EOFUNY2'
+unyc <<'EOFUNY2'
 set -vx
 ######################################################################################################################
 ######################################################################################################################
@@ -1807,11 +1787,7 @@ EOFUNY2
 
 ######################################################################################################################
 ######################################################################################################################
-### Exit chroot and Backup
-
-mountpoint -q $UNY/dev/shm && umount $UNY/dev/shm
-umount $UNY/dev/pts
-umount $UNY/{sys,proc,run,dev}
+### Release stage1 to GitHub
 
 cd $UNY || exit
 # shellcheck disable=SC2154
