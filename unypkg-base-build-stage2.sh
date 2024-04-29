@@ -1791,10 +1791,6 @@ done
 echo "Removing temporary build tools"
 # shellcheck disable=SC2114
 rm -rf /{bin,sbin,lib,lib64,usr,media,mnt,opt,srv,boot}
-EOFUNY4
-
-unyc <<"EOFUNY5"
-set -vx
 
 ### Setup skeleton again
 mkdir -pv /usr/bin
@@ -1807,9 +1803,7 @@ exec bash "$@"
 EOF
 chmod +x /bin/bash
 ln -sfv bash /bin/sh
-
-
-EOFUNY5
+EOFUNY4
 
 ######################################################################################################################
 ######################################################################################################################
@@ -1833,7 +1827,7 @@ set -vx
 
 mkdir -pv /var/uny/build
 mv -v /uny/sources /var/uny/sources
-rm -rfv /uny/uny/include
+rm -rf /uny/uny/include
 
 cd $UNY || exit
 XZ_OPT="--threads=0" tar -cJpf /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
