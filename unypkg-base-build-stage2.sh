@@ -1081,9 +1081,6 @@ get_include_paths
 ####################################################
 ### Start of individual build script
 
-CFLAGS="-O3"
-CXXFLAGS="${CFLAGS}"
-
 case $(uname -m) in
 x86_64)
     sed -e '/m64=/s/lib64/lib/' \
@@ -1112,7 +1109,7 @@ cd build || exit
     --with-system-zlib \
     --with-linker-hash-style=gnu
 
-make -j"$(nproc)"
+make CFLAGS="-O3" CXXFLAGS="${CFLAGS}" -j"$(nproc)"
 
 ulimit -s 32768
 
