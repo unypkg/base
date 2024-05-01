@@ -1109,7 +1109,7 @@ cd build || exit
     --with-system-zlib \
     --with-linker-hash-style=gnu
 
-make CFLAGS="-O2" CXXFLAGS="${CFLAGS}" -j"$(nproc)"
+make -j"$(nproc)"
 
 ulimit -s 32768
 
