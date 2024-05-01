@@ -83,7 +83,8 @@ uny_build_date_now="$(echo "$stage1_release_url" | sed -e "s|.*/\([^/]*$\)|\1|" 
 mkdir -v $UNY
 cd $UNY || exit
 
-wget "$stage1_download_url"
+echo "Downloading stage1. Please wait."
+wget -q "$stage1_download_url"
 tar xf "$stage1_filename"
 rm "$stage1_filename"
 
