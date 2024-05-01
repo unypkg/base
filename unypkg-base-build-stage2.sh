@@ -1080,6 +1080,9 @@ get_include_paths
 ####################################################
 ### Start of individual build script
 
+CFLAGS="-O3"
+CXXFLAGS="${CFLAGS}"
+
 case $(uname -m) in
 x86_64)
     sed -e '/m64=/s/lib64/lib/' \
@@ -1097,6 +1100,7 @@ mkdir -v build
 cd build || exit
 
 ../configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+    --libexecdir=/uny/pkg/"$pkgname"/"$pkgver"/libexec \
     LD=ld \
     --enable-languages=c,c++ \
     --enable-default-pie \
@@ -1104,7 +1108,8 @@ cd build || exit
     --disable-multilib \
     --disable-bootstrap \
     --disable-fixincludes \
-    --with-system-zlib
+    --with-system-zlib \
+    --with-linker-hash-style=gnu
 
 make -j"$(nproc)"
 

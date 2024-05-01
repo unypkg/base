@@ -1034,7 +1034,8 @@ cd build || exit
     --target="$UNY_TGT" \
     --disable-nls \
     --enable-gprofng=no \
-    --disable-werror
+    --disable-werror \
+    --enable-default-hash-style=gnu
 
 make -j"$(nproc)"
 make install
@@ -1264,8 +1265,7 @@ unpack_cd
     --host="$UNY_TGT" \
     --build="$(build-aux/config.guess)" \
     --enable-install-program=hostname \
-    --enable-no-install-program=kill,uptime \
-    gl_cv_macro_MB_CUR_MAX_good=y
+    --enable-no-install-program=kill,uptime
 
 make -j"$(nproc)"
 make DESTDIR=$UNY install
@@ -1495,7 +1495,8 @@ cd build || exit
     --enable-shared \
     --enable-gprofng=no \
     --disable-werror \
-    --enable-64-bit-bfd
+    --enable-64-bit-bfd \
+    --enable-default-hash-style=gnu
 
 make -j"$(nproc)"
 make DESTDIR=$UNY install
