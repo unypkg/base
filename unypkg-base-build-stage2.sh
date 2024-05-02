@@ -78,7 +78,15 @@ stage1_release_url="$(curl -Ls -o /dev/null -w "%{url_effective}" https://github
 stage1_download_url="$(echo "$stage1_release_url" | sed -e "s|/tag/|/download/|" -e "s|\([^/]*$\)|\1/\1.tar.xz|")"
 # shellcheck disable=SC2001
 stage1_filename="$(echo "$stage1_release_url" | sed -e "s|.*/\([^/]*$\)|\1.tar.xz|")"
-uny_build_date_now="$(echo "$stage1_release_url" | sed -e "s|.*/\([^/]*$\)|\1|" -e "s|stage1-||")"
+latest_base_release_date="$(curl -Ls -o /dev/null -w "%{url_effective}" https://github.com/unypkg/base/releases/latest |
+    sed -e "s|.*/\([^/]*$\)|\1|" -e "s|base-||")"
+latest_stage1_release_date="$(echo "$stage1_release_url" | sed -e "s|.*/\([^/]*$\)|\1|" -e "s|stage1-||")"
+
+if [[ "$latest_base_release_date" == "$latest_stage1_release_date" ]]; then
+    uny_build_date
+else
+    uny_build_date_now="$latest_stage1_release_date"
+fi
 
 mkdir -v $UNY
 cd $UNY || exit
