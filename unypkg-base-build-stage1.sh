@@ -156,7 +156,7 @@ version_details
 archiving_source
 
 ######################################################################################################################
-### GCC
+### GCC + GCC-Shared
 pkgname="gcc"
 pkggit="https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc*"
 gitdepth="--depth=1"
@@ -170,6 +170,9 @@ latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=4 | sed "s|gcc-
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 repo_clone_version_archive
+
+pkgname="gcc-shared"
+version_details
 
 ######################################################################################################################
 ######################################################################################################################

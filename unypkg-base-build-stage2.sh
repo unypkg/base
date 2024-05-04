@@ -148,6 +148,14 @@ echo -n "/uny/include${cplus_include_base[*]}:/uny/include${cplus_include_base[*
 source /uny/git/unypkg/fn
 
 ######################################################################################################################
+### Prepare gcc-shared libs until replaced with gcc's below
+
+gcc_ver="$(echo /uny/sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
+mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
+cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
+cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
+
+######################################################################################################################
 ### Glibc
 
 pkgname="glibc"
@@ -180,9 +188,6 @@ make -j"$(nproc)" check
 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 
 make install
-
-cp -av /usr/lib/libstdc++.so* /uny/pkg/"$pkgname"/"$pkgver"/lib/
-cp -av /usr/lib/libgcc_s.so* /uny/pkg/"$pkgname"/"$pkgver"/lib/
 
 #sed "/RTLDLIST=/s@/usr@/uny/pkg/$pkgname/$pkgver@g" -i /uny/pkg/"$pkgname"/"$pkgver"/bin/ldd
 sed '/RTLDLIST=/s@/lib64@/lib@g' -i /uny/pkg/"$pkgname"/"$pkgver"/bin/ldd
@@ -1106,7 +1111,6 @@ mkdir -v build
 cd build || exit
 
 ../configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
-    --libexecdir=/uny/pkg/"$pkgname"/"$pkgver"/libexec \
     LD=ld \
     --enable-languages=c,c++ \
     --enable-default-pie \
@@ -1132,15 +1136,22 @@ ln -svr /uny/pkg/"$pkgname"/"$pkgver"/bin/cpp /uny/pkg/"$pkgname"/"$pkgver"/lib
 ln -sfv /uny/pkg/"$pkgname"/"$pkgver"/libexec/gcc/"$(gcc -dumpmachine)"/"$pkgver"/liblto_plugin.so \
     /uny/pkg/binutils/*/lib/bfd-plugins/
 
-cp -av /uny/pkg/"$pkgname"/"$pkgver"/lib/libstdc++.so* /uny/pkg/glibc/*/lib/
-#cp -av /usr/lib/libgcc_s.so* /uny/pkg/glibc/*/lib/
-
 echo -n "/uny/pkg/$pkgname/$pkgver/include:/uny/pkg/$pkgname/$pkgver/include/c++/$pkgver" >/uny/paths/include-cplus
+
+### Move directories to gcc-shared
+rm -rv /uny/pkg/gcc-shared/$pkgver/lib
+mv -v /uny/pkg/$pkgname/$pkgver/lib /uny/pkg/gcc-shared/$pkgver/lib
+mv -v /uny/pkg/$pkgname/$pkgver/share /uny/pkg/gcc-shared/$pkgver/share
 
 ####################################################
 ### End of individual build script
 
 add_to_paths_files
+
+### Also add gcc-shared to paths files
+pkgname="gcc-shared"
+add_to_paths_files
+
 dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
 
