@@ -150,7 +150,7 @@ source /uny/git/unypkg/fn
 ######################################################################################################################
 ### Prepare gcc-shared libs until replaced with gcc's below
 
-gcc_ver="$(echo /uny/sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
+gcc_ver="$(echo /sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
 mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
 cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
 cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
