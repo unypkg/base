@@ -1847,6 +1847,8 @@ EOF
 
 set -vx
 
+binary_stripping
+
 mkdir -pv /var/uny/build
 mv -v /uny/sources /var/uny/sources
 rm -rf /uny/uny/include
@@ -1855,7 +1857,7 @@ cd $UNY || exit
 XZ_OPT="--threads=0" tar -cJpf /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz uny/build/logs
 mv -v /uny/uny/build/logs /var/uny/build/logs
 
-XZ_OPT="--threads=0" tar --exclude='./tmp' -cJpf /var/unypkg-base-"$uny_build_date_now".tar.xz .
+XZ_OPT="-9 --threads=0" tar --exclude='./tmp' -cJpf /var/unypkg-base-"$uny_build_date_now".tar.xz .
 
 gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
     /var/unypkg-base-build-logs-"$uny_build_date_now".tar.xz /var/unypkg-base-"$uny_build_date_now".tar.xz
