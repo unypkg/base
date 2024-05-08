@@ -35,6 +35,8 @@ export UNY_AUTO_PAT
 GH_TOKEN="$(cat GH_TOKEN)"
 export GH_TOKEN
 
+set -xv
+
 ######################################################################################################################
 ######################################################################################################################
 ### Installing the unypkg script
@@ -43,8 +45,6 @@ wget -qO- uny.nu/pkg | bash
 source /uny/git/unypkg/fn
 
 uny_auto_github_conf
-
-set -xv
 
 ### Setup the Shell
 ln -fs /bin/bash /bin/sh
