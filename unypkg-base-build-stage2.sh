@@ -155,6 +155,10 @@ mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
 cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
 cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
 
+pkgname="gcc-shared"
+pkgver="$gcc_ver"
+add_to_paths_files
+
 ######################################################################################################################
 ### Glibc
 
