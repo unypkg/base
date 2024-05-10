@@ -150,24 +150,11 @@ echo -n "/uny/include${cplus_include_base[*]}:/uny/include${cplus_include_base[*
 source /uny/git/unypkg/fn
 
 ######################################################################################################################
-### Prepare gcc-shared libs until replaced with gcc's below
-
-gcc_ver="$(echo /sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
-mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
-cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
-cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
-
-pkgname="gcc-shared"
-pkgver="$gcc_ver"
-add_to_paths_files
-
-######################################################################################################################
 ### Glibc
 
 pkgname="glibc"
 
 version_verbose_log_clean_unpack_cd
-get_env_var_values
 
 ####################################################
 ### Start of individual build script
@@ -294,6 +281,18 @@ unset ZONEINFO
 ln -sfv /uny/pkg/"$pkgname"/"$pkgver"/share/zoneinfo/Europe/Berlin /etc/localtime
 
 cleanup_verbose_off_timing_end
+
+######################################################################################################################
+### Prepare gcc-shared libs until replaced with gcc's below
+
+gcc_ver="$(echo /sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
+mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
+cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
+cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
+
+pkgname="gcc-shared"
+pkgver="$gcc_ver"
+add_to_paths_files
 
 ######################################################################################################################
 ### Linux API Headers
