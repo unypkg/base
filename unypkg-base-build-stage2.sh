@@ -159,8 +159,6 @@ version_verbose_log_clean_unpack_cd
 ####################################################
 ### Start of individual build script
 
-unset LDFLAGS LD_RUN_PATH
-
 sed '/width -=/s/workend - string/number_length/' \
     -i stdio-common/vfprintf-process-arg.c
 
