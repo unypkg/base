@@ -158,7 +158,7 @@ archiving_source
 ######################################################################################################################
 ### GCC + GCC-Shared
 pkgname="gcc"
-pkggit="https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc*"
+pkggit="https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc-13.2.0"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
