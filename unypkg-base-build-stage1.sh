@@ -1686,10 +1686,10 @@ chgrp -v utmp /var/log/lastlog
 chmod -v 664 /var/log/lastlog
 chmod -v 600 /var/log/btmp
 
-CFLAGS="-O0"
-export CFLAGS
-CXXFLAGS="${CFLAGS}"
-export CXXFLAGS
+#CFLAGS="-O0"
+#export CFLAGS
+#CXXFLAGS="${CFLAGS}"
+#export CXXFLAGS
 
 ######################################################################################################################
 ######################################################################################################################
