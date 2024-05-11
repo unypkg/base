@@ -1086,6 +1086,7 @@ sed -i '/SHELL/s/\/bin\/bash/\/usr\/bin\/env bash/' /etc/default/useradd
 ####################################################
 ### End of individual build script
 
+add_to_paths_files
 dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
 
