@@ -874,33 +874,6 @@ wget https://ftp.gnu.org/gnu/libtool/libtool-"$latest_ver".tar.xz
 version_details
 
 ######################################################################################################################
-### Expat
-pkgname="expat"
-pkggit="https://github.com/libexpat/libexpat.git refs/tags/R_[0-9.]*"
-gitdepth="--depth=1"
-
-### Get version info from git remote
-# shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "R_[0-9](_[0-9]+)+$" | tail -n 1)"
-latest_ver="$(echo "$latest_head" | cut --delimiter='/' --fields=3 | sed -e "s|R_||" -e "s|_|.|g")"
-latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
-
-check_for_repo_and_create
-git_clone_source_repo
-
-cd "$pkg_git_repo_dir" || exit
-mv expat ../expat
-cd /uny/sources || exit
-rm -r "$pkg_git_repo_dir"
-cd expat || exit
-./buildconf.sh
-cd /uny/sources || exit
-pkg_git_repo_dir=expat
-
-version_details
-archiving_source
-
-######################################################################################################################
 ### Less
 pkgname="less"
 pkggit="https://github.com/gwsw/less.git refs/tags/v[0-9.]*"

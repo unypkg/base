@@ -1386,32 +1386,6 @@ dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
 
 ######################################################################################################################
-### Expat
-pkgname="expat"
-
-version_verbose_log_clean_unpack_cd
-get_env_var_values
-get_include_paths
-
-####################################################
-### Start of individual build script
-
-./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
-    --disable-static \
-    --docdir=/uny/pkg/"$pkgname"/"$pkgver"/share/doc/"$pkgname"
-
-make -j"$(nproc)"
-make -j"$(nproc)" check
-make install
-
-####################################################
-### End of individual build script
-
-add_to_paths_files
-dependencies_file_and_unset_vars
-cleanup_verbose_off_timing_end
-
-######################################################################################################################
 ### Less
 pkgname="less"
 
