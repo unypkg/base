@@ -1092,7 +1092,7 @@ cleanup_verbose_off_timing_end
 
 ######################################################################################################################
 ### GCC
-pkgname="gcc"
+pkgname="gcc-shared"
 
 version_verbose_log_clean_unpack_cd
 get_env_var_values
@@ -1138,25 +1138,26 @@ su tester -c "PATH=$PATH make -k -j$(nproc) check"
 chown -R root:root .
 make install
 
-ln -sv gcc /uny/pkg/"$pkgname"/"$pkgver"/bin/cc
-ln -svr /uny/pkg/"$pkgname"/"$pkgver"/bin/cpp /uny/pkg/"$pkgname"/"$pkgver"/lib
-ln -sfv /uny/pkg/"$pkgname"/"$pkgver"/libexec/gcc/"$(gcc -dumpmachine)"/"$pkgver"/liblto_plugin.so \
+### Move bin, include and libexec directories to gcc folder
+mkdir -pv /uny/pkg/gcc/$pkgver
+mv -v /uny/pkg/$pkgname/$pkgver/bin /uny/pkg/gcc/$pkgver/bin
+mv -v /uny/pkg/$pkgname/$pkgver/include /uny/pkg/gcc/$pkgver/include
+mv -v /uny/pkg/$pkgname/$pkgver/libexec /uny/pkg/gcc/$pkgver/libexec
+
+ln -sv gcc /uny/pkg/gcc/"$pkgver"/bin/cc
+#ln -svr /uny/pkg/gcc/"$pkgver"/bin/cpp /uny/pkg/"$pkgname"/"$pkgver"/lib
+ln -sfv /uny/pkg/gcc/"$pkgver"/libexec/gcc/"$(gcc -dumpmachine)"/"$pkgver"/liblto_plugin.so \
     /uny/pkg/binutils/*/lib/bfd-plugins/
 
-echo -n "/uny/pkg/$pkgname/$pkgver/include:/uny/pkg/$pkgname/$pkgver/include/c++/$pkgver" >/uny/paths/include-cplus
-
-### Move directories to gcc-shared
-rm -rv /uny/pkg/gcc-shared/$pkgver/lib
-mv -v /uny/pkg/$pkgname/$pkgver/lib /uny/pkg/gcc-shared/$pkgver/lib
-mv -v /uny/pkg/$pkgname/$pkgver/share /uny/pkg/gcc-shared/$pkgver/share
+echo -n "/uny/pkg/gcc/$pkgver/include:/uny/pkg/gcc/$pkgver/include/c++/$pkgver" >/uny/paths/include-cplus
 
 ####################################################
 ### End of individual build script
 
 add_to_paths_files
 
-### Also add gcc-shared to paths files
-pkgname="gcc-shared"
+### Also add gcc folders to paths files
+pkgname="gcc"
 add_to_paths_files
 
 dependencies_file_and_unset_vars
