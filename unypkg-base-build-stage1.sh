@@ -157,7 +157,7 @@ archiving_source
 
 ######################################################################################################################
 ### GCC + GCC-Shared
-pkgname="gcc-shared"
+pkgname="gcc"
 pkggit="https://gcc.gnu.org/git/gcc.git refs/tags/releases/gcc-13.2.0"
 gitdepth="--depth=1"
 
@@ -171,8 +171,8 @@ latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 repo_clone_version_archive
 
-pkgname="gcc"
-version_details
+#pkgname="gcc"
+#version_details
 
 ######################################################################################################################
 ######################################################################################################################

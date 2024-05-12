@@ -284,11 +284,11 @@ cleanup_verbose_off_timing_end
 ### Prepare gcc-shared libs until replaced with gcc's below
 
 gcc_ver="$(echo /sources/gcc-* | grep -Eo "gcc-[^0-9]*(([0-9]+\.)*[0-9]+)" | sort -u | sed "s|gcc-||")"
-mkdir -pv /uny/pkg/gcc-shared/"$gcc_ver"/lib
-cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
-cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc-shared/"$gcc_ver"/lib/
+mkdir -pv /uny/pkg/gcc/"$gcc_ver"/lib
+cp -av /usr/lib/libstdc++.so* /uny/pkg/gcc/"$gcc_ver"/lib/
+cp -av /usr/lib/libgcc_s.so* /uny/pkg/gcc/"$gcc_ver"/lib/
 
-pkgname="gcc-shared"
+pkgname="gcc"
 pkgver="$gcc_ver"
 add_to_paths_files
 
@@ -1139,13 +1139,13 @@ chown -R root:root .
 make install
 
 ### Move bin, include and libexec directories to gcc folder
-mkdir -pv /uny/pkg/gcc/$pkgver
-mv -v /uny/pkg/$pkgname/$pkgver/bin /uny/pkg/gcc/$pkgver/bin
-mv -v /uny/pkg/$pkgname/$pkgver/include /uny/pkg/gcc/$pkgver/include
-mv -v /uny/pkg/$pkgname/$pkgver/libexec /uny/pkg/gcc/$pkgver/libexec
+#mkdir -pv /uny/pkg/gcc/$pkgver
+#mv -v /uny/pkg/$pkgname/$pkgver/bin /uny/pkg/gcc/$pkgver/bin
+#mv -v /uny/pkg/$pkgname/$pkgver/include /uny/pkg/gcc/$pkgver/include
+#mv -v /uny/pkg/$pkgname/$pkgver/libexec /uny/pkg/gcc/$pkgver/libexec
 
 ln -sv gcc /uny/pkg/gcc/"$pkgver"/bin/cc
-#ln -svr /uny/pkg/gcc/"$pkgver"/bin/cpp /uny/pkg/"$pkgname"/"$pkgver"/lib
+ln -svr /uny/pkg/gcc/"$pkgver"/bin/cpp /uny/pkg/"$pkgname"/"$pkgver"/lib
 ln -sfv /uny/pkg/gcc/"$pkgver"/libexec/gcc/"$(gcc -dumpmachine)"/"$pkgver"/liblto_plugin.so \
     /uny/pkg/binutils/*/lib/bfd-plugins/
 
@@ -1157,8 +1157,8 @@ echo -n "/uny/pkg/gcc/$pkgver/include:/uny/pkg/gcc/$pkgver/include/c++/$pkgver" 
 add_to_paths_files
 
 ### Also add gcc folders to paths files
-pkgname="gcc"
-add_to_paths_files
+#pkgname="gcc"
+#add_to_paths_files
 
 dependencies_file_and_unset_vars
 cleanup_verbose_off_timing_end
