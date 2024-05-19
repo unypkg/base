@@ -1839,6 +1839,11 @@ gh -R unypkg/base release create "$uny_build_date_now" --generate-notes \
 ######################################################################################################################
 ### Packaging individual ones
 
+# Comment this next for loop out if not all packages are supposed to be released individually
+for pkg in /uny/pkg/*; do
+    echo "release" >/var/uny/sources/release-"$(basename "$pkg")"
+done
+
 if compgen -G "/var/uny/sources/release-*"; then
     cd $UNY/pkg || exit
     for pkg in /var/uny/sources/release-*; do
