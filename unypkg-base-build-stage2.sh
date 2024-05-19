@@ -1819,7 +1819,7 @@ EOF
 set -vx
 
 # shellcheck disable=SC2034
-pkgname="*" && pkver="*"
+pkgname="*" && latest_ver="*"
 binary_stripping
 
 mkdir -pv /var/uny/build
