@@ -1863,7 +1863,7 @@ if compgen -G "/var/uny/sources/release-*"; then
 
         XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
 
-        if [[ -f "$pkg"/"$pkgv"/rdep ]]; then
+        if [[ -s "$pkg"/"$pkgv"/rdep ]]; then
             gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
                 "$pkg/$pkgv/vdet#vdet - $vdet_content" "$pkg"/"$pkgv"/rdep unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
         else
