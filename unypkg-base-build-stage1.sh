@@ -692,7 +692,7 @@ repo_clone_version_archive
 ### GMP
 pkgname="gmp"
 
-latest_pkg="$(curl https://ftp.gnu.org/gnu/gmp/ | tac | tac | grep -oE "gmp-.*.tar.xz\"" | sed "s|\"||" | tail -n 1)"
+latest_pkg="$(curl -L https://ftp.gnu.org/gnu/gmp/ | tac | tac | grep -oE "gmp-.*.tar.xz\"" | sed "s|\"||" | sort --version-sort | tail -n 1)"
 latest_ver="$(echo "$latest_pkg" | cut --delimiter='-' --fields=2 | sed "s|.tar.xz||")"
 latest_commit_id="$latest_ver"
 
@@ -857,8 +857,13 @@ archiving_source
 
 ######################################################################################################################
 ### Libtool
+libtool_stable_ver="$(
+    curl -L https://ftp.gnu.org/gnu/libtool/ | tac | tac | grep -oE "libtool-.*.tar.xz\"" |
+        sed -e "s|.tar.xz\"||" -e "s|libtool-||" | sort --version-sort | tail -n 1
+)"
+
 pkgname="libtool"
-pkggit="https://git.savannah.gnu.org/git/libtool.git refs/tags/v[0-9.]*"
+pkggit="https://git.savannah.gnu.org/git/libtool.git refs/tags/v${libtool_stable_ver}*"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
