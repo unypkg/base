@@ -1,4 +1,4 @@
-name: Build stage2 only
+name: Create unypkg repos
 
 on: workflow_dispatch
 
