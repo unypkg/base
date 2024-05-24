@@ -1,0 +1,21 @@
+name: Build stage2 only
+
+on: workflow_dispatch
+
+env:
+  UNY_AUTO_PAT: ${{ secrets.UNY_AUTO_PAT }}
+  GH_TOKEN: ${{ secrets.UNY_AUTO_PAT }}
+
+jobs:
+  create-unypkg-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Save variables to files
+        run: |
+          echo "$UNY_AUTO_PAT" >UNY_AUTO_PAT
+          echo "$GH_TOKEN" >GH_TOKEN
+      - name: Create unypkg repos
+        run: |
+          chmod +x unypkg-create-repos.sh
+          sudo ./unypkg-create-repos.sh
