@@ -32,7 +32,7 @@ source /uny/git/unypkg/fn
 
 uny_auto_github_conf
 
-pkgrepos=("libexif" "libgd" "freetype" "cmake" "libarchive" "libuv" "libevent" "libzip" "imagemagick")
+pkgrepos=("yasm" "mariadb" "boost" "libaio" "xorg-libs")
 for pkgrepo in "${pkgrepos[@]}"; do
     pkgname="$pkgrepo"
     check_for_repo_and_create
