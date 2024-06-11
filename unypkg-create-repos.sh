@@ -32,7 +32,7 @@ source /uny/git/unypkg/fn
 
 uny_auto_github_conf
 
-pkgrepos=("go")
+pkgrepos=("brotli" "boringssl" "libinjection" "libbcrypt" "ip2location" "libmaxminddb" "luajit" "udns" "openldap" "yajl")
 for pkgrepo in "${pkgrepos[@]}"; do
     pkgname="$pkgrepo"
     check_for_repo_and_create
