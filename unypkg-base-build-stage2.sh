@@ -468,7 +468,6 @@ get_include_paths_temp
 ### Start of individual build script
 
 ./configure --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
-    --mandir=/usr/share/man \
     --with-shared \
     --without-debug \
     --without-normal \
