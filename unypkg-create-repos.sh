@@ -32,7 +32,7 @@ source /uny/git/unypkg/fn
 
 uny_auto_github_conf
 
-pkgrepos=("redis" "crowdsec" "crowdsec-openresty-bouncer" "crowdsec-firewall-bouncer")
+pkgrepos=("re2" "abseil-cpp")
 for pkgrepo in "${pkgrepos[@]}"; do
     pkgname="$pkgrepo"
     check_for_repo_and_create
