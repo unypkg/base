@@ -32,7 +32,7 @@ source /uny/git/unypkg/fn
 
 uny_auto_github_conf
 
-pkgrepos=("sqlite" "postgresql")
+pkgrepos=("postfix" "dovecot")
 for pkgrepo in "${pkgrepos[@]}"; do
     pkgname="$pkgrepo"
     check_for_repo_and_create
