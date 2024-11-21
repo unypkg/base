@@ -26,9 +26,9 @@ set -xv
 ######################################################################################################################
 ######################################################################################################################
 ### Installing the unypkg script
-wget -qO- uny.nu/pkg | bash
+wget -qO- uny.nu/pkg | sh -s
 ### unypkg functions
-source /uny/git/unypkg/fn
+source /uny/pkg/unypkg/fn
 
 uny_auto_github_conf
 
