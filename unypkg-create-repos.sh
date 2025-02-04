@@ -32,7 +32,7 @@ source /uny/pkg/unypkg/fn
 
 uny_auto_github_conf
 
-pkgrepos=("ghostscript")
+pkgrepos=("valkey")
 for pkgrepo in "${pkgrepos[@]}"; do
     pkgname="$pkgrepo"
     check_for_repo_and_create
